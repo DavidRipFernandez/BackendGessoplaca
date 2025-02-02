@@ -6,6 +6,9 @@ var environment = builder.Environment.EnvironmentName;
 
 Console.WriteLine($"Ejecutando en entorno: {environment}");
 
+// Obtener la cadena de conexion desde appsettings.json
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 // Mostrar todas las variables de entorno dentro del contenedor
 foreach (var env in Environment.GetEnvironmentVariables().Keys)
 {
