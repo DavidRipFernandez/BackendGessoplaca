@@ -10,6 +10,6 @@ namespace NSoft.Repositories
         Task<Material> ObtenerPorIdAsync(int id);
         Task AgregarAsync (Material material);
         Task ActualizarAsync (Material material);
-        Task EliminarAsync (Material material);
+        Task EliminarAsync (int id);
     }
 }

@@ -14,24 +14,31 @@ namespace NSoft.Repositories
             _context = context;
         }
 
-        public Task ActualizarAsync(Material material)
+        public async Task ActualizarAsync(Material material)
         {
-            throw new NotImplementedException();
+            _context.Materiales.Update(material);
+            await _context.SaveChangesAsync();
         }
 
-        public Task AgregarAsync(Material material)
+        public async Task AgregarAsync(Material material)
         {
-            throw new NotImplementedException();
+            await _context.Materiales.AddAsync(material);
+            await _context.SaveChangesAsync();
         }
 
-        public Task EliminarAsync(Material material)
+        public async Task EliminarAsync(int id)
         {
-            throw new NotImplementedException();
+            var material = await _context.Materiales.FindAsync(id);
+            if (material!=null)
+            {
+                _context.Materiales.Remove(material);
+                await _context.SaveChangesAsync();
+            }
         }
 
-        public Task<Material> ObtenerPorIdAsync(int id)
+        public async Task<Material> ObtenerPorIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Materiales.FindAsync(id);        
         }
 
         public async Task<IEnumerable<Material>> ObtenerTodosAsync()
