@@ -16,7 +16,7 @@ namespace NSoft.Models
         public string Descripcion { get; set; }
 
         //public Guid SecurityStamp { get; set; } = Guid.NewGuid();
-        public string SecurityStampo { get; set; } = Guid.NewGuid().ToString();
+        public string SecurityStamp { get; set; } = Guid.NewGuid().ToString();
         public ICollection<RolModulo> RolesModulos { get; set; }
     }
 }
