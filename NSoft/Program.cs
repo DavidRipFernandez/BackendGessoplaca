@@ -3,6 +3,10 @@ using NSoft.Data;
 using Microsoft.EntityFrameworkCore;
 using NSoft.Repositories;
 using NSoft.Services;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
+using NSoft.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,8 +15,19 @@ var environment = builder.Environment.EnvironmentName;
 
 Console.WriteLine($"Ejecutando en entorno: {environment}");
 
+//configura el archivo de configuración según el entorno
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true) //archivo base
+    .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true) //sobreescribe con el del entorno 
+    .AddEnvironmentVariables(); //permite variables de entorno de docker
+
 // Obtener la cadena de conexion desde appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Configurar autenticación JWT
+var key = Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]);
+
 
 // Mostrar todas las variables de entorno dentro del contenedor
 foreach (var env in Environment.GetEnvironmentVariables().Keys)
@@ -25,14 +40,24 @@ builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
 builder.Services.AddScoped<IMaterialService, MaterialService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddDbContext<ApplicationDbContext>(options =>options.UseSqlServer(connectionString));  
+builder.Services.AddDbContext<ApplicationDbContext>(options =>options.UseSqlServer(connectionString));
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = false;
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+            ValidAudience = builder.Configuration["JwtSettings:Audience"],
+            ClockSkew = TimeSpan.Zero
+        };
+    });
 
-//configura el archivo de configuración según el entorno
-builder.Configuration
-    .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true) //archivo base
-    .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true) //sobreescribe con el del entorno 
-    .AddEnvironmentVariables(); //permite variables de entorno de docker
 
 var app = builder.Build();
 
@@ -47,7 +72,8 @@ if (environment == "Development")
 
 // Configure the HTTP request pipeline.
 
-
+app.UseAuthentication();
+app.UseMiddleware<SecurityStampMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();

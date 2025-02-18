@@ -1,9 +1,19 @@
-﻿namespace NSoft.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace NSoft.Models
 {
-    public class Material
+    public class Material : AuditableEntity
     {
-        public int Id { get; set; }
-        public string Nombre { get; set; } = string.Empty;
-        public decimal Precio { get; set; }
+        [Key]
+        public int MaterialId { get; set; }
+        [Required, MaxLength(100)]
+        public string CodigoMaterial { get; set; }
+        [Required, MaxLength(100)]
+        public string Nombre { get; set; } 
+        [MaxLength(100)]
+        public string SistemaMedicion { get; set; }
+        // 🔥 Relación con Categoría de Material
+        public int CategoriaId { get; set; }
+        public CategoriaMaterial CategoriasMateriales { get; set; }
     }
 }

@@ -29,12 +29,12 @@ namespace NSoft.Controllers
         public async Task<IActionResult> Post([FromBody] Material material)
         {
             await _materialService.AgregarAsync(material);
-            return CreatedAtAction(nameof(Get), new { id = material.Id }, material);
+            return CreatedAtAction(nameof(Get), new { id = material.MaterialId }, material);
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] Material material)
         {
-            if (id != material.Id) return BadRequest();
+            if (id != material.MaterialId) return BadRequest();
             await _materialService.ActualizarAsync(material);
             return NoContent();
         }
