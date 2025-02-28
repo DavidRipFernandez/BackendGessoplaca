@@ -18,6 +18,14 @@ namespace NSoft.Middleware
             var dbContext = context.RequestServices.GetRequiredService<ApplicationDbContext>();
             var authorizationHeader = context.Request.Headers["Authorization"].FirstOrDefault();
 
+            // Excluir cierto endpoints del middleware
+            var path = context.Request.Path.Value.ToLower();
+            if (path.Contains("/api/auth/login") || path.Contains("/api/auth/register"))
+            {
+                await _next(context);
+                return;
+            }
+
             if (!string.IsNullOrEmpty(authorizationHeader) && authorizationHeader.StartsWith("Bearer "))
             {
                 var token = authorizationHeader.Substring(7);
@@ -36,6 +44,7 @@ namespace NSoft.Middleware
                             var user = await dbContext.Usuarios.FindAsync(userId);
                             if (user == null || user.SecurityStamp != tokenSecurityStamp || !user.Estado)
                             {
+                                Console.WriteLine($"Token rechazado para el usuario {userId}. SecurityStamp cambiado o usuario desactivado.");
                                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                                 await context.Response.WriteAsync("Token inválido o usuario no autorizado.");
                                 return;
@@ -43,8 +52,9 @@ namespace NSoft.Middleware
                         }
                     }
                 }
-                catch (SecurityTokenException)
+                catch (SecurityTokenException ex)
                 {
+                    Console.WriteLine($"Token inválido: {ex.Message}");
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                     await context.Response.WriteAsync("Token no válido.");
                     return;

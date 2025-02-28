@@ -1,4 +1,4 @@
-
+ï»¿
 using NSoft.Data;
 using Microsoft.EntityFrameworkCore;
 using NSoft.Repositories;
@@ -15,7 +15,7 @@ var environment = builder.Environment.EnvironmentName;
 
 Console.WriteLine($"Ejecutando en entorno: {environment}");
 
-//configura el archivo de configuración según el entorno
+//configura el archivo de configuraciÃ³n segÃºn el entorno
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true) //archivo base
@@ -24,9 +24,6 @@ builder.Configuration
 
 // Obtener la cadena de conexion desde appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-// Configurar autenticación JWT
-var key = Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]);
 
 
 // Mostrar todas las variables de entorno dentro del contenedor
@@ -38,10 +35,12 @@ foreach (var env in Environment.GetEnvironmentVariables().Keys)
 //configurar el archivo de configuracion
 builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
 builder.Services.AddScoped<IMaterialService, MaterialService>();
-builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<IAuthService, AuthServices>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>options.UseSqlServer(connectionString));
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -50,13 +49,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(key),
-            ValidateIssuer = true,
-            ValidateAudience = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"])),
+            ValidateIssuer = false,
+            ValidateAudience = false,
             ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
             ValidAudience = builder.Configuration["JwtSettings:Audience"],
             ClockSkew = TimeSpan.Zero
         };
+        //options.TokenValidationParameters.NameClaimType = "userId";
+        //options.TokenValidationParameters.RoleClaimType = "rolId";
     });
 
 
@@ -73,11 +74,18 @@ if (environment == "Development")
 
 // Configure the HTTP request pipeline.
 
+app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseMiddleware<SecurityStampMiddleware>();
-app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+app.Use(async (context, next) =>
+{
+    Console.WriteLine($"Request: {context.Request.Method} {context.Request.Path}");
+    Console.WriteLine($"Authorization Header: {context.Request.Headers["Authorization"]}");
+    await next.Invoke();
+    Console.WriteLine($"Response Status Code: {context.Response.StatusCode}");
+});
 app.Run();
 
 /*
