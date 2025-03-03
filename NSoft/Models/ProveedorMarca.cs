@@ -5,11 +5,14 @@ namespace NSoft.Models
 {
     public class ProveedorMarca : AuditableEntity
     {
-        [Key]
-        public int ProveedorMarcaId { get; set; }
         public string ProveedorCifId { get; set; }
-        public Proveedor Proveedor { get; set; }
         public int MarcaId { get; set; }
+
+
+        [ForeignKey(nameof(ProveedorCifId))]
+        public Proveedor Proveedor { get; set; }
+
+        [ForeignKey(nameof(MarcaId))]
         public Marca Marca { get; set; }
 
     }

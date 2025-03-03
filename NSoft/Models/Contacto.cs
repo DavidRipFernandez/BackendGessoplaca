@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace NSoft.Models
 {
@@ -9,18 +10,22 @@ namespace NSoft.Models
         public int ContactoId { get; set; }
 
         [Required, MaxLength(100)]
-        public string Nombre { get; set; }
+        public required string Nombre { get; set; }
 
         [MaxLength(100)]
-        public string Correo { get; set; }
+        public string? Correo { get; set; }
 
         [MaxLength(50)]
-        public string Telefono { get; set; }
+        public required string Telefono { get; set; }
 
         [MaxLength(100)]
-        public string Descripcion { get; set; }
-        // 🔥 Clave foránea a Proveedor
-        public string ProveedorCifId { get; set; }
-        public Proveedor Proveedores { get; set; }
+        public string? Descripcion { get; set; }
+
+        [Required]
+        [MaxLength(50)]
+        [ForeignKey(nameof(Proveedor))]
+        public required string ProveedorCifId { get; set; }
+
+        public virtual Proveedor? Proveedor { get; set; }
     }
 }

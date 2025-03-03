@@ -19,14 +19,30 @@ namespace NSoft.Data
         public DbSet<Contacto> Contactos { get; set; }
         public DbSet<Marca> Marcas { get; set; }
         public DbSet<ProveedorMarca> ProveedoresMarcas { get; set; }
-        public DbSet<PrecioTarifa> PreciosTarifas { get; set; } 
-
+        public DbSet<PrecioTarifa> PreciosTarifas { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //configuracion de claves primarias compuestas
+
+            modelBuilder.Entity<Proveedor>()
+                .HasMany(p => p.Contactos)
+                .WithOne(c => c.Proveedor)
+                .HasForeignKey(c => c.ProveedorCifId);
+
+            modelBuilder.Entity<ProveedorMarca>()
+                .HasKey(pm => new { pm.ProveedorCifId, pm.MarcaId });
+
+            modelBuilder.Entity<ProveedorMarca>()
+                .HasOne(pm => pm.Proveedor)
+                .WithMany(p => p.ProveedoresMarcas)
+                .HasForeignKey(pm => pm.ProveedorCifId);
+
+            modelBuilder.Entity<ProveedorMarca>()
+                .HasOne(pm => pm.Marca)
+                .WithMany(m => m.ProveedoresMarcas)
+                .HasForeignKey(pm => pm.MarcaId);
+
             modelBuilder.Entity<RolModulo>().HasKey(rm => new { rm.RolId, rm.ModuloId, rm.TipoPermisoId });
-            modelBuilder.Entity<ProveedorMarca>().HasKey(pm => new { pm.ProveedorCifId, pm.MarcaId });
             base.OnModelCreating(modelBuilder);
         }
     }
