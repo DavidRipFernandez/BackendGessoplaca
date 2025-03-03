@@ -16,8 +16,7 @@ namespace NSoft.Models
         [MaxLength(100)]
         public required string DomicilioSocial { get; set; }
 
-        // Relación con Contactos y ProveedorMarcas
-        public virtual ICollection<Contacto> Contactos { get; set; } = [];
-        public virtual ICollection<ProveedorMarca> ProveedoresMarcas { get; set; } = [];
+        public ICollection<Contacto> Contactos { get; set; } = new List<Contacto>();
+        public ICollection<ProveedorMarca> ProveedoresMarcas { get; set; } = new List<ProveedorMarca>();
     }
 }

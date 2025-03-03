@@ -1,4 +1,5 @@
-﻿using NSoft.Models;
+﻿using NSoft.DTOs;
+using NSoft.Models;
 using NSoft.Repositories;
 
 namespace NSoft.Services
@@ -58,11 +59,28 @@ namespace NSoft.Services
             }
         }
 
-        public async Task<Proveedor> ObtenerPorIdAsync ( string id )
+        public async Task<SupplierDTO?> ObtenerPorIdAsync ( string id )
         {
             try
             {
-                return await _supplierRepository.ObtenerPorIdAsync(id);
+                var proveedor = await _supplierRepository.ObtenerPorIdAsync(id);
+                if (proveedor == null)
+                    return null;
+
+                return new SupplierDTO
+                {
+                    ProveedorCifId = proveedor.ProveedorCifId,
+                    Nombre = proveedor.Nombre,
+                    DomicilioSocial = proveedor.DomicilioSocial,
+                    Contactos = proveedor.Contactos.Select(c => new ContactoDTO
+                    {
+                        ContactoId = c.ContactoId,
+                        Nombre = c.Nombre,
+                        Correo = c.Correo,
+                        Telefono = c.Telefono,
+                        Descripcion = c.Descripcion
+                    }).ToList()
+                };
             }
             catch (Exception ex)
             {

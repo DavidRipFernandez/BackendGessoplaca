@@ -21,10 +21,11 @@ namespace NSoft.Models
         [MaxLength(100)]
         public string? Descripcion { get; set; }
 
+        [Required]
+        [MaxLength(50)]
         [ForeignKey(nameof(Proveedor))]
-        public string ProveedorCifId { get; set; }
+        public required string ProveedorCifId { get; set; }
 
-        //[JsonIgnore]
         public virtual Proveedor? Proveedor { get; set; }
     }
 }

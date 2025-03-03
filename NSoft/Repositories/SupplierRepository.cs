@@ -65,6 +65,7 @@ namespace NSoft.Repositories
                 var supplier = await _context.Proveedores.FindAsync(id) ?? throw new KeyNotFoundException($"No se encontro al proveedor con ID {id}");
 
                 _context.Proveedores.Remove(supplier);
+                await _context.SaveChangesAsync();
                 return true;
             }
             catch (DbUpdateException dbEx)
@@ -83,7 +84,7 @@ namespace NSoft.Repositories
         {
             try
             {
-                var supplier = await _context.Proveedores.FindAsync(id) ?? throw new KeyNotFoundException($"No se encontró al proveedor con Id {id}");
+                var supplier = await _context.Proveedores.Include(p => p.Contactos).FirstOrDefaultAsync(p => p.ProveedorCifId == id) ?? throw new KeyNotFoundException($"No se encontró al proveedor con Id {id}");
 
                 return supplier;
             }

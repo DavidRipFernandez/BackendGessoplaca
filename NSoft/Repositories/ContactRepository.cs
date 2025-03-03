@@ -67,6 +67,7 @@ namespace NSoft.Repositories
                 var contacto = await _context.Contactos.FindAsync(id) ?? throw new KeyNotFoundException($"No se encontro el contacto con ID {id}");
                 
                 _context.Contactos.Remove(contacto);
+                _context.SaveChanges();
                 return true;
             }
             catch (DbUpdateException dbEx)

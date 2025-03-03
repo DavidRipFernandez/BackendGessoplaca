@@ -50,7 +50,7 @@ namespace NSoft.Services
             {
                 var eliminado = await _contactRepository.EliminarAsync(id);
                 if (!eliminado)
-                    throw new KeyNotFoundException($"No se encontró el contacto con ID {id} para eliminar.");
+                    throw new KeyNotFoundException($"CONTROLLER| No se encontró el contacto con ID {id} para eliminar.");
             }
             catch (Exception ex)
             {
