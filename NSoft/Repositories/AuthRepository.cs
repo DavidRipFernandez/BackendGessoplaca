@@ -2,6 +2,7 @@
 using NSoft.Data;
 using NSoft.Models;
 using NSoft.DTOs;
+using NSoft.Repositories.IRepositories;
 
 namespace NSoft.Repositories
 {

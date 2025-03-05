@@ -1,6 +1,7 @@
 ﻿using NSoft.DTOs;
 using NSoft.Models;
-using NSoft.Repositories;
+using NSoft.Repositories.IRepositories;
+using NSoft.Services.IServices;
 
 namespace NSoft.Services
 {

@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
 using NSoft.Data;
-using NSoft.Services;
 using NSoft.DTOs;
 using NSoft.Models;
 using System.Text;
+using NSoft.Services.IServices;
 
 namespace NSoft.Controllers
 {
@@ -48,8 +48,9 @@ namespace NSoft.Controllers
             return StatusCode(response.StatusCode, response);
         }
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
+        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto, int idUsuario)
         {
+            //Cada vez q recargue la pagina te pedirá si alguien esta autenticado.
             var response = await _authService.RegisterAsync(registerDto);   
             return StatusCode(response.StatusCode, response);
         }

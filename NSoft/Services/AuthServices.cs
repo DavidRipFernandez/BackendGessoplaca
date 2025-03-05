@@ -1,5 +1,4 @@
 ﻿using NSoft.DTOs;
-using NSoft.Repositories;
 using NSoft.Models;
 using BCrypt.Net;
 using System.Diagnostics;
@@ -7,6 +6,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using NSoft.Services.IServices;
+using NSoft.Repositories.IRepositories;
 
 namespace NSoft.Services
 {

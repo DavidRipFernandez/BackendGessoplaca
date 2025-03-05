@@ -1,7 +1,7 @@
 ﻿using NSoft.DTOs;
 using NSoft.Models;
 
-namespace NSoft.Repositories
+namespace NSoft.Repositories.IRepositories
 {
     public interface IAuthRepository
     {

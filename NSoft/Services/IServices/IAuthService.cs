@@ -1,7 +1,7 @@
 ﻿using NSoft.DTOs;
 using NSoft.Models;
 
-namespace NSoft.Services
+namespace NSoft.Services.IServices
 {
     public interface IAuthService
     {
@@ -28,7 +28,7 @@ namespace NSoft.Services
         /// <summary>
         /// Genera un token JWT para un usuario autenticado.
         /// </summary>
-        Task <string> GenerateJwtToken(Usuario usuario);
+        Task<string> GenerateJwtToken(Usuario usuario);
 
         /// <summary>
         /// Invalida los tokens del usuario al cambiar su `SecurityStamp`.

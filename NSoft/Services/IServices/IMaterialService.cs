@@ -1,6 +1,6 @@
 ﻿using NSoft.Models;
 
-namespace NSoft.Services
+namespace NSoft.Services.IServices
 {
     public interface IMaterialService
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSoft.Models;
-using NSoft.Services;
+using NSoft.Services.IServices;
 
 namespace NSoft.Controllers
 {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NSoft.Data;
 using NSoft.Models;
+using NSoft.Repositories.IRepositories;
 using System.Collections.Generic;
 
 namespace NSoft.Repositories

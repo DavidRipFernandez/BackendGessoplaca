@@ -7,6 +7,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using NSoft.Middleware;
+using NSoft.Services.IServices;
+using NSoft.Repositories.IRepositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,7 +43,12 @@ builder.Services.AddScoped<IContactRepository, ContactRepository>();
 builder.Services.AddScoped<IContactService, ContactService>();
 builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
-
+builder.Services.AddScoped<IUserRepository, UserRepository>();  
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IModulePermissionRepository, ModulePermissionRepository>();
+builder.Services.AddScoped<IModulePermissionService, ModulePermissionService>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>options.UseSqlServer(connectionString));
@@ -91,6 +98,7 @@ app.Use(async (context, next) =>
     await next.Invoke();
     Console.WriteLine($"Response Status Code: {context.Response.StatusCode}");
 });
+//builder.WebHost.UseUrls("http://0.0.0.0:8080", "https://0.0.0.0:8081");
 app.Run();
 
 /*
