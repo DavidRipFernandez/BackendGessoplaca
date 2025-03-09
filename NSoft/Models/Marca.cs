@@ -11,6 +11,7 @@ namespace NSoft.Models
         public string Nombre { get; set; }
         [MaxLength(100)]
         public string Descripcion { get; set; }
+        public bool Estado { get; set; } = true;
         public ICollection<ProveedorMarca> ProveedoresMarcas { get; set; }
     }
 }

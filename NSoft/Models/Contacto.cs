@@ -20,6 +20,7 @@ namespace NSoft.Models
 
         [MaxLength(100)]
         public string? Descripcion { get; set; }
+        public bool Estado { get; set; } = true;
 
         [Required]
         [MaxLength(50)]

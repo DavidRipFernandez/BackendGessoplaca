@@ -12,6 +12,7 @@ namespace NSoft.Models
         public string Nombre { get; set; } 
         [MaxLength(100)]
         public string SistemaMedicion { get; set; }
+        public bool Estado { get; set; } = true;
         // 🔥 Relación con Categoría de Material
         public int CategoriaId { get; set; }
         public CategoriaMaterial CategoriasMateriales { get; set; }
