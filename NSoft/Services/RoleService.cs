@@ -32,5 +32,23 @@ namespace NSoft.Services
                 return ApiResponse<IEnumerable<RoleDTO>>.ErrorResponse("Error interno al obtener roles.", ex.Message, 500);
             }
         }
+        public async Task<ApiResponse<RoleDTO>> CreateRoleAsync(RoleCreatedDTO dto)
+        {
+            if (dto == null)
+            {
+                return ApiResponse<RoleDTO>.ErrorResponse("El objeto enviado es nulo.", "Se requiere información para crear un rol.", 400);
+            }
+
+            try
+            {
+                var roleDto = await _roleRepository.CreateRoleAsync(dto);
+                return ApiResponse<RoleDTO>.SuccessResponse(roleDto, "Rol creado exitosamente.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error en RoleService.CreateRoleAsync: {ex.Message}", ex);
+                return ApiResponse<RoleDTO>.ErrorResponse("Error interno al crear el rol.", ex.Message, 500);
+            }
+        }
     }
 }

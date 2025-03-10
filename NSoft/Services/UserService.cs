@@ -35,6 +35,11 @@ namespace NSoft.Services
                 return ApiResponse<IEnumerable<UsuarioDTO>>.ErrorResponse("Error interno al obtener usuarios.", ex.Message, 500);
             }
         }
+
+
+
+
+
     }
 
 }
