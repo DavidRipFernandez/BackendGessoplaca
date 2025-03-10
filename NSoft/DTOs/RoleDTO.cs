@@ -11,6 +11,5 @@
     {
         public string NombreRol { get; set; }
         public string Descripcion { get; set; }
-        public bool Estado { get; set; }
     }
 }

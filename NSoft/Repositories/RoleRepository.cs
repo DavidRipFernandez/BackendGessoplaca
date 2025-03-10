@@ -24,7 +24,6 @@ namespace NSoft.Repositories
                 {
                     NombreRol = dto.NombreRol,
                     Descripcion = dto.Descripcion,
-                    Estado = dto.Estado,
                     SecurityStamp = Guid.NewGuid().ToString()
                 };
 
