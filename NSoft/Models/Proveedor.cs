@@ -16,6 +16,8 @@ namespace NSoft.Models
         [MaxLength(100)]
         public required string DomicilioSocial { get; set; }
 
+        public bool estado {  get; set; } = true;
+
         public ICollection<Contacto> Contactos { get; set; } = new List<Contacto>();
         public ICollection<ProveedorMarca> ProveedoresMarcas { get; set; } = new List<ProveedorMarca>();
     }

@@ -15,13 +15,20 @@ namespace NSoft.Services
             _supplierRepository = supplierRepository;
         }
 
-        public async Task ActualizarAsync ( Proveedor supplier )
+        public async Task ActualizarAsync ( ProveedorDto supplier )
         {
             ArgumentNullException.ThrowIfNull(supplier);
 
             try
             {
-                var actualizado = await _supplierRepository.ActualizarAsync(supplier);
+                var proveedor = new Proveedor
+                {
+                    ProveedorCifId = supplier.ProveedorCifId,
+                    Nombre = supplier.Nombre,
+                    DomicilioSocial = supplier.DomicilioSocial
+                };
+
+                var actualizado = await _supplierRepository.ActualizarAsync(proveedor);
                 if (!actualizado)
                     throw new KeyNotFoundException($"No se encontró al proveedor con ID {supplier.ProveedorCifId} para actualizar");
 
@@ -32,12 +39,19 @@ namespace NSoft.Services
             }
         }
 
-        public async Task AgregarAsync ( Proveedor supplier )
+        public async Task AgregarAsync ( ProveedorDto supplier )
         {
 
             try
             {
-                await _supplierRepository.AgregarAsync(supplier);
+                var proveedor = new Proveedor
+                {
+                    ProveedorCifId = supplier.ProveedorCifId,
+                    Nombre = supplier.Nombre,
+                    DomicilioSocial = supplier.DomicilioSocial
+                };
+
+                await _supplierRepository.AgregarAsync(proveedor);
             }
             catch (Exception ex)
             {
@@ -60,7 +74,7 @@ namespace NSoft.Services
             }
         }
 
-        public async Task<SupplierDTO?> ObtenerPorIdAsync ( string id )
+        public async Task<ProveedorDto?> ObtenerPorIdAsync ( string id )
         {
             try
             {
@@ -68,12 +82,12 @@ namespace NSoft.Services
                 if (proveedor == null)
                     return null;
 
-                return new SupplierDTO
+                return new ProveedorDto
                 {
                     ProveedorCifId = proveedor.ProveedorCifId,
                     Nombre = proveedor.Nombre,
                     DomicilioSocial = proveedor.DomicilioSocial,
-                    Contactos = proveedor.Contactos.Select(c => new ContactoDTO
+                    Contactos = proveedor.Contactos.Select(c => new ContactoDto
                     {
                         ContactoId = c.ContactoId,
                         Nombre = c.Nombre,
@@ -89,11 +103,28 @@ namespace NSoft.Services
             }
         }
 
-        public async Task<IEnumerable<Proveedor>> ObtenerTodosAsync ()
+        public async Task<IEnumerable<ProveedorDto>> ObtenerTodosAsync ()
         {
             try
             {
-                return await _supplierRepository.ObtenerTodosAsync();
+                var proveedores = await _supplierRepository.ObtenerTodosAsync();
+                if (proveedores == null) 
+                    return null;
+
+                return proveedores.Select(proveedor => new ProveedorDto
+                {
+                    ProveedorCifId = proveedor.ProveedorCifId,
+                    Nombre = proveedor.Nombre,
+                    DomicilioSocial = proveedor.DomicilioSocial,
+                    Contactos = proveedor.Contactos.Select(c => new ContactoDto
+                    {
+                        ContactoId = c.ContactoId,
+                        Nombre = c.Nombre,
+                        Correo = c.Correo,
+                        Telefono = c.Telefono,
+                        Descripcion = c.Descripcion
+                    }).ToList()
+                }).ToList();
             }
             catch (Exception ex)
             {
