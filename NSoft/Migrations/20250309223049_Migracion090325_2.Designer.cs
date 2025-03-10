@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NSoft.Data;
 
@@ -11,9 +12,11 @@ using NSoft.Data;
 namespace NSoft.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250309223049_Migracion090325_2")]
+    partial class Migracion090325_2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -346,9 +349,7 @@ namespace NSoft.Migrations
                         .HasColumnType("int");
 
                     b.Property<bool>("Estado")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("FechaCreacion")
                         .HasColumnType("datetime2");
@@ -425,9 +426,7 @@ namespace NSoft.Migrations
                         .HasColumnType("int");
 
                     b.Property<bool>("Estado")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("FechaCreacion")
                         .HasColumnType("datetime2");

@@ -23,7 +23,8 @@ namespace NSoft.Repositories
                 {
                     RolId =r.RolId,
                     NombreRol = r.NombreRol,
-                    Descripcion = r.Descripcion
+                    Descripcion = r.Descripcion,
+                    Estado = r.Estado
                 }).ToListAsync();
 
                 return roles;

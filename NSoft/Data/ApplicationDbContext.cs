@@ -24,25 +24,52 @@ namespace NSoft.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
-            modelBuilder.Entity<Proveedor>()
-                .HasMany(p => p.Contactos)
+            modelBuilder.Entity<Rol>()
+                .Property(r => r.Estado)
+                .HasDefaultValue(true);
+
+            modelBuilder.Entity<Usuario>()
+                .Property(r => r.Estado)
+                .HasDefaultValue(true);
+
+            modelBuilder.Entity<Proveedor>(entity =>
+            {
+                entity.Property(r => r.Estado)
+                .HasDefaultValue(true);
+
+                entity.HasMany(p => p.Contactos)
                 .WithOne(c => c.Proveedor)
                 .HasForeignKey(c => c.ProveedorCifId);
+            }
+            );
 
-            modelBuilder.Entity<ProveedorMarca>()
-                .HasKey(pm => new { pm.ProveedorCifId, pm.MarcaId });
+            modelBuilder.Entity<ProveedorMarca>(
+                entity =>
+                {
+                    entity.HasKey(pm => new { pm.ProveedorCifId, pm.MarcaId });
+                    
+                    entity.Property(pm => pm.Estado)
+                    .HasDefaultValue(true);
 
-            modelBuilder.Entity<ProveedorMarca>()
-                .HasOne(pm => pm.Proveedor)
-                .WithMany(p => p.ProveedoresMarcas)
-                .HasForeignKey(pm => pm.ProveedorCifId);
+                    entity.HasOne(pm => pm.Proveedor)
+                    .WithMany(p => p.ProveedoresMarcas)
+                    .HasForeignKey(pm => pm.ProveedorCifId);
 
-            modelBuilder.Entity<ProveedorMarca>()
-                .HasOne(pm => pm.Marca)
-                .WithMany(m => m.ProveedoresMarcas)
-                .HasForeignKey(pm => pm.MarcaId);
+                    entity.HasOne(pm => pm.Marca)
+                    .WithMany(m => m.ProveedoresMarcas)
+                    .HasForeignKey(pm => pm.MarcaId);
+                }
+                );
 
-            modelBuilder.Entity<RolModulo>().HasKey(rm => new { rm.RolId, rm.ModuloId, rm.TipoPermisoId });
+            modelBuilder.Entity<RolModulo>(entity =>
+            {
+                entity.HasKey(rm => new { rm.RolId, rm.ModuloId, rm.TipoPermisoId });
+
+                entity.Property(rm => rm.Estado)
+                .HasDefaultValue(true);
+            });
+            
+            
             base.OnModelCreating(modelBuilder);
         }
     }
