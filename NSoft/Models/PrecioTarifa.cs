@@ -10,6 +10,7 @@ namespace NSoft.Models
 
         [Required]
         public decimal Precio { get; set; }
+        public bool Estado { get; set; } = true;
 
         // 🔥 Clave foránea a Material
         public int MaterialId { get; set; }

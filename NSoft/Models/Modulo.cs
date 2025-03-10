@@ -14,6 +14,7 @@ namespace NSoft.Models
         public string NombreModulo { get; set; }
 
         public string Descripcion { get; set; }
+        public bool Estado { get; set; } = true;
 
         //public Guid SecurityStamp { get; set; } = Guid.NewGuid();
         public string SecurityStamp { get; set; } = Guid.NewGuid().ToString();

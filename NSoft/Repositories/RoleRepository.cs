@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NSoft.Data;
 using NSoft.DTOs;
+using NSoft.Models;
 using NSoft.Repositories.IRepositories;
 
 namespace NSoft.Repositories
@@ -14,6 +15,40 @@ namespace NSoft.Repositories
             _context = context;
         }
 
+        public async Task<RoleDTO> CreateRoleAsync(RoleCreatedDTO dto)
+        {
+            try
+            {
+                // Mapear el DTO a la entidad Rol.
+                var newRole = new Rol
+                {
+                    NombreRol = dto.NombreRol,
+                    Descripcion = dto.Descripcion,
+                    SecurityStamp = Guid.NewGuid().ToString()
+                };
+
+                // Agregar la entidad al contexto.
+                await _context.Roles.AddAsync(newRole);
+                await _context.SaveChangesAsync();
+
+                // Mapear la entidad creada a RoleDTO.
+                var roleDto = new RoleDTO
+                {
+                    RolId = newRole.RolId,
+                    NombreRol = newRole.NombreRol,
+                    Descripcion = newRole.Descripcion,
+                    Estado = newRole.Estado
+                };
+
+                return roleDto;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al crear el nuevo rol.", ex);
+            }
+        }
+
+
         public async Task<IEnumerable<RoleDTO>> GetAllRolesAsync()
         {
             try
@@ -23,7 +58,8 @@ namespace NSoft.Repositories
                 {
                     RolId =r.RolId,
                     NombreRol = r.NombreRol,
-                    Descripcion = r.Descripcion
+                    Descripcion = r.Descripcion,
+                    Estado = r.Estado
                 }).ToListAsync();
 
                 return roles;

@@ -26,6 +26,7 @@ namespace NSoft.Repositories
                        {
                            UsuarioId = u.UsuarioId,
                            Nombre = u.Nombre,
+                           Constraseña = u.ContraseñaHash,
                            Correo = u.Correo,
                            Estado = u.Estado,
                            RolId = u.Rol.RolId, // RolId en nivel principal

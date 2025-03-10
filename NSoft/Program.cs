@@ -10,7 +10,20 @@ using NSoft.Middleware;
 using NSoft.Services.IServices;
 using NSoft.Repositories.IRepositories;
 
+var corsPolicy = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
+
+// Habilitar CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: corsPolicy,
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173") // URL del frontend
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
 
 // Detectar el entorno actual (Development, Production, etc.)
 var environment = builder.Environment.EnvironmentName;
@@ -87,6 +100,7 @@ if (environment == "Development")
 // Configure the HTTP request pipeline.
 
 app.UseHttpsRedirection();
+app.UseCors(corsPolicy);
 app.UseAuthentication();
 app.UseMiddleware<SecurityStampMiddleware>();
 app.UseAuthorization();

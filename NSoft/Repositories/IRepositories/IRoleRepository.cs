@@ -6,5 +6,6 @@ namespace NSoft.Repositories.IRepositories
     {
         Task<bool> RoleExistsAsync(int rolId);
         Task<IEnumerable<RoleDTO>> GetAllRolesAsync();
+        Task<RoleDTO> CreateRoleAsync(RoleCreatedDTO dto);
     }
 }

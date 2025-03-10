@@ -15,6 +15,7 @@ namespace NSoft.Models
 
         [MaxLength(100)]
         public required string DomicilioSocial { get; set; }
+        public bool Estado { get; set; } = true;
 
         public bool estado {  get; set; } = true;
 

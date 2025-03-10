@@ -7,7 +7,7 @@ namespace NSoft.Models
     {
         public string ProveedorCifId { get; set; }
         public int MarcaId { get; set; }
-
+        public bool Estado { get; set; } = true;
 
         [ForeignKey(nameof(ProveedorCifId))]
         public Proveedor Proveedor { get; set; }

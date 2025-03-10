@@ -9,5 +9,6 @@
         public int TipoPermisoId { get; set; }
         public TipoPermiso TipoPermiso { get; set; }
         public string SecurityStamp { get; set; } = Guid.NewGuid().ToString();
+        public bool Estado { get; set; } = true;
     }
 }
