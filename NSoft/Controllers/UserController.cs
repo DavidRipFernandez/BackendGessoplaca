@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NSoft.DTOs;
 using NSoft.Services.IServices;
 
 
@@ -19,6 +20,13 @@ namespace NSoft.Controllers
         public async Task<IActionResult> GetUsuarios()
         {
             var response = await _usuarioService.GetAllUsuariosAsync();
+            return StatusCode(response.StatusCode, response);
+        }
+        // PUT: api/User
+        [HttpPut("UpdateUsers")]
+        public async Task<IActionResult> UpdateUsuario([FromBody] UserUpdateDTO UserUpdate)
+        {
+            var response = await _usuarioService.UpdateUsuarioAsync(UserUpdate);
             return StatusCode(response.StatusCode, response);
         }
     }

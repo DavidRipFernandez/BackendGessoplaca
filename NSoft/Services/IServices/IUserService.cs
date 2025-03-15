@@ -5,5 +5,6 @@ namespace NSoft.Services.IServices
     public interface IUserService
     {
         Task<ApiResponse<IEnumerable<UsuarioDTO>>> GetAllUsuariosAsync();
+        Task<ApiResponse<UsuarioDTO>> UpdateUsuarioAsync(UserUpdateDTO dto);
     }
 }

@@ -26,7 +26,7 @@ namespace NSoft.Repositories
                        {
                            UsuarioId = u.UsuarioId,
                            Nombre = u.Nombre,
-                           Constraseña = u.ContraseñaHash,
+                           Contraseña = u.ContraseñaHash,
                            Correo = u.Correo,
                            Estado = u.Estado,
                            RolId = u.Rol.RolId, // RolId en nivel principal
@@ -39,7 +39,62 @@ namespace NSoft.Repositories
             {
                 throw new Exception("Error al obtener la lista de usuarios", ex);
             }
+        }
+        public async Task<UsuarioDTO> UpdateUsuarioAsync(UserUpdateDTO UserUpdateDto)
+        {
+            try
+            {
+                // Buscar el usuario por su ID
+                var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.UsuarioId == UserUpdateDto.UsuarioId);
+                if (usuario == null)
+                {
+                    throw new Exception("Usuario no encontrado.");
+                }
 
+                // Actualizar los campos (si la contraseña se envía, se actualiza; de lo contrario se deja la existente)
+                usuario.Nombre = UserUpdateDto.Nombre;
+                usuario.Correo = UserUpdateDto.Correo;
+                usuario.Estado = UserUpdateDto.Estado;
+                usuario.RolId = UserUpdateDto.RolId;
+                usuario.ContraseñaHash = BCrypt.Net.BCrypt.HashPassword(UserUpdateDto.Contraseña);
+                
+
+                // Actualizamos el SecurityStamp para reflejar el cambio (opcional)
+                usuario.SecurityStamp = Guid.NewGuid().ToString();
+
+                // Guardar cambios
+                await _context.SaveChangesAsync();
+
+                // Mapear la entidad actualizada a DTO
+                var updatedUsuario = new UsuarioDTO
+                {
+                    UsuarioId = usuario.UsuarioId,
+                    Nombre = usuario.Nombre,
+                    Contraseña = usuario.ContraseñaHash,
+                    Correo = usuario.Correo,
+                    Estado = usuario.Estado,
+                    RolId = usuario.RolId,
+                    RolNombre = usuario.Rol != null ? usuario.Rol.NombreRol : string.Empty
+                };
+
+                return updatedUsuario;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al actualizar el usuario.", ex);
+            }
+        }
+
+        public async Task<bool> UserExistAsync(int userId)
+        {
+            try
+            {
+                return await _context.Usuarios.AnyAsync(r => r.UsuarioId == userId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al encontrar al usuario", ex);
+            }
         }
     }
 }
