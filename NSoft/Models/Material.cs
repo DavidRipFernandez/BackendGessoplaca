@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NSoft.Models
 {
@@ -7,14 +8,17 @@ namespace NSoft.Models
         [Key]
         public int MaterialId { get; set; }
         [Required, MaxLength(100)]
-        public string CodigoMaterial { get; set; }
+        public required string CodigoMaterial { get; set; }
         [Required, MaxLength(100)]
-        public string Nombre { get; set; } 
+        public required string Nombre { get; set; } 
         [MaxLength(100)]
-        public string SistemaMedicion { get; set; }
+        public string? SistemaMedicion { get; set; }
         public bool Estado { get; set; } = true;
-        // 🔥 Relación con Categoría de Material
+        [Required]
+        [ForeignKey(nameof(CategoriaId))]
         public int CategoriaId { get; set; }
-        public CategoriaMaterial CategoriasMateriales { get; set; }
+        public CategoriaMaterial CategoriasMaterial { get; set; }
+
+        public ICollection<PrecioTarifa> precioTarifas { get; set; } = new List<PrecioTarifa>();
     }
 }

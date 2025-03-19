@@ -5,19 +5,21 @@ namespace NSoft.Models
 {
     public class PrecioTarifa : AuditableEntity
     {
-        [Key]
-        public int PrecioTarifaId { get; set; }
+        public int MaterialId { get; set; }
+        public int MarcaId { get; set; }
+        public string ProveedorCifId { get; set; }
 
         [Required]
         public decimal Precio { get; set; }
         public bool Estado { get; set; } = true;
 
-        // 🔥 Clave foránea a Material
-        public int MaterialId { get; set; }
-        public Material Materiales { get; set; }
+        [ForeignKey(nameof(MaterialId))]
+        public Material Material { get; set; }
 
-        // 🔥 Clave foránea a ProveedorMarca
-        public int ProveedorMarcaId { get; set; }
-        public ProveedorMarca ProveedoresMarcas { get; set; }
+        //[ForeignKey(nameof(MarcaId))]
+        //public Marca Marca { get; set; }
+
+        [ForeignKey(nameof(ProveedorCifId) + "," + nameof(MarcaId))]
+        public ProveedorMarca ProveedorMarca { get; set; }
     }
 }

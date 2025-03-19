@@ -10,5 +10,7 @@ namespace NSoft.Services.IServices
         Task AgregarAsync(ProveedorDto contacto);
         Task ActualizarAsync(ProveedorDto contacto);
         Task EliminarAsync(string id);
+        Task<bool> AgregarMarcaAlProveedor ( string proveedorId, int marcaId );
+        Task<bool> DarBajaMarcaAlProveedor ( string proveedorId, int marcaId );
     }
 }

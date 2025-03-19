@@ -2,6 +2,7 @@
 using NSoft.Data;
 using NSoft.Models;
 using NSoft.Repositories.IRepositories;
+using System.Text.RegularExpressions;
 
 namespace NSoft.Repositories
 {
@@ -59,6 +60,57 @@ namespace NSoft.Repositories
             }
         }
 
+        public async Task<bool> AgregarMarcaAlProveedor ( string proveedorId, int marcaId )
+        {
+            try
+            {
+                var proveedorMarca = new ProveedorMarca
+                {
+                    ProveedorCifId = proveedorId,
+                    MarcaId = marcaId,
+                    Estado = true
+                };
+                await _context.ProveedoresMarcas.AddAsync(proveedorMarca);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateException dbEx)
+            {
+                _logger.LogError(dbEx, "Error al agregar Marca al proveedor a la base de datos.");
+                throw new Exception("Error al agregar Marca al proveedor a la base de datos.", dbEx);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al agregar al proveedor.");
+                throw new Exception("Error inesperado al agregar al proveedor", ex);
+            }
+        }
+
+        public async Task<bool> DarBajaMarcaAlProveedor ( string proveedorId, int marcaId )
+        {
+            try
+            {
+                var proveedorMarca = await _context.ProveedoresMarcas.FindAsync(proveedorId, marcaId);
+                if (proveedorId == null)
+                    throw new KeyNotFoundException($"No se encontró el asociacion entre los IDs {proveedorId}, {marcaId}");
+
+                proveedorMarca.FechaModificacion = DateTime.UtcNow;
+                proveedorMarca.Estado = false;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateException dbEx)
+            {
+                _logger.LogError(dbEx, "Error al Eliminar marca para proveedor con ID {ProveedorCifId}", proveedorId);
+                throw new Exception("Error al Eliminar marca para proveedor en la base de datos.", dbEx);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al Eliminar marca para el proveedor con ID {ProveedorCifId}", proveedorId);
+                throw new Exception("Error inesperado al Eliminar marca para el proveedor.", ex);
+            }
+        }
+
         public async Task<bool> EliminarAsync ( string id )
         {
             try
@@ -86,6 +138,27 @@ namespace NSoft.Repositories
             try
             {
                 var supplier = await _context.Proveedores.Include(p => p.Contactos).FirstOrDefaultAsync(p => p.ProveedorCifId == id) ?? throw new KeyNotFoundException($"No se encontró al proveedor con Id {id}");
+
+                return supplier;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al obtener al proveedor con ID {ProveedorCifId}", id);
+                throw new Exception("Error inesperado al obtener al proveedor.", ex);
+            }
+        }
+
+        public async Task<Proveedor> ObtenerProveedorConMarcas ( string id )
+        {
+            try
+            {
+                var supplier = await _context.Proveedores
+                    .Include(p => p.ProveedoresMarcas)
+                    .ThenInclude(pm => pm.Marca)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(p => p.ProveedorCifId == id) ?? 
+                    
+                    throw new KeyNotFoundException($"No se encontró al proveedor con Id {id}");
 
                 return supplier;
             }

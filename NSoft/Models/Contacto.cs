@@ -22,8 +22,6 @@ namespace NSoft.Models
         public string? Descripcion { get; set; }
         public bool Estado { get; set; } = true;
 
-        public bool estado { get; set; } = true;
-
         [Required]
         [MaxLength(50)]
         [ForeignKey(nameof(Proveedor))]

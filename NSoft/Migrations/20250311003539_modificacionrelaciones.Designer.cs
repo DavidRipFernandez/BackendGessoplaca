@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NSoft.Data;
 
@@ -11,9 +12,11 @@ using NSoft.Data;
 namespace NSoft.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250311003539_modificacionrelaciones")]
+    partial class modificacionrelaciones
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -274,6 +277,8 @@ namespace NSoft.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("MaterialId", "ProveedorCifId", "MarcaId");
+
+                    b.HasIndex("MarcaId");
 
                     b.HasIndex("ProveedorCifId", "MarcaId");
 
@@ -551,6 +556,12 @@ namespace NSoft.Migrations
 
             modelBuilder.Entity("NSoft.Models.PrecioTarifa", b =>
                 {
+                    b.HasOne("NSoft.Models.Marca", "Marca")
+                        .WithMany()
+                        .HasForeignKey("MarcaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("NSoft.Models.Material", "Material")
                         .WithMany("precioTarifas")
                         .HasForeignKey("MaterialId")
@@ -562,6 +573,8 @@ namespace NSoft.Migrations
                         .HasForeignKey("ProveedorCifId", "MarcaId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Marca");
 
                     b.Navigation("Material");
 

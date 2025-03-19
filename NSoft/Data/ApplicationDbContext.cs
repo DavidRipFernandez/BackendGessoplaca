@@ -34,7 +34,7 @@ namespace NSoft.Data
 
             modelBuilder.Entity<Proveedor>(entity =>
             {
-                entity.Property(r => r.Estado)
+                entity.Property(p => p.Estado)
                 .HasDefaultValue(true);
 
                 entity.HasMany(p => p.Contactos)
@@ -60,6 +60,29 @@ namespace NSoft.Data
                     .HasForeignKey(pm => pm.MarcaId);
                 }
                 );
+
+            modelBuilder.Entity<PrecioTarifa>(
+                entity =>
+                {
+                    entity.HasKey(pt => new { pt.MaterialId, pt.ProveedorCifId, pt.MarcaId });
+
+                    entity.Property(pt => pt.Estado).HasDefaultValue(true);
+
+                    entity.HasOne(pt => pt.Material)
+                    .WithMany(m => m.precioTarifas)
+                    .HasForeignKey(pt => pt.MaterialId);
+
+                    entity.HasOne(pt => pt.ProveedorMarca)
+                    .WithMany(pm => pm.PrecioTarifa)
+                    .HasForeignKey(pt => new { pt.ProveedorCifId, pt.MarcaId })
+                    .OnDelete(DeleteBehavior.Restrict);
+                }
+                );
+
+            modelBuilder.Entity<CategoriaMaterial>()
+                .HasMany(cm => cm.Materiales)
+                .WithOne(m => m.CategoriasMaterial)
+                .HasForeignKey(m => m.CategoriaId);
 
             modelBuilder.Entity<RolModulo>(entity =>
             {

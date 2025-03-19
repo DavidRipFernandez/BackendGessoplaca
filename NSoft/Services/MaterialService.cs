@@ -1,4 +1,5 @@
-﻿using NSoft.Models;
+﻿using NSoft.DTOs;
+using NSoft.Models;
 using NSoft.Repositories.IRepositories;
 using NSoft.Services.IServices;
 
@@ -13,29 +14,67 @@ namespace NSoft.Services
             _materialRepository = materialRepository;
         }
 
-        public async Task ActualizarAsync(Material material)
+        public async Task<bool> ActualizarAsync( MaterialDto material )
         {
-            await _materialRepository.AgregarAsync(material);
+            ArgumentNullException.ThrowIfNull( material );
+            var materialModificado = new Material
+            {
+                Nombre = material.Nombre,
+                CodigoMaterial = material.CodigoMaterial,
+                SistemaMedicion = material.SistemaMedicion,
+                CategoriaId = material.CategoriaId
+            };
+
+            return await _materialRepository.AgregarAsync(materialModificado);
         }
 
-        public async Task AgregarAsync(Material material)
+        public async Task<bool> AgregarAsync( MaterialDto material )
         {
-            await _materialRepository.AgregarAsync(material);
+            ArgumentNullException.ThrowIfNull(material);
+            var nuevoMaterial = new Material
+            {
+                Nombre = material.Nombre,
+                CodigoMaterial = material.CodigoMaterial,
+                SistemaMedicion = material.SistemaMedicion,
+                CategoriaId = material.CategoriaId
+            };
+
+            return await _materialRepository.AgregarAsync(nuevoMaterial);
         }
 
-        public async Task EliminarAsync(int id)
+        public async Task<bool> EliminarAsync(int id)
         {
-            await _materialRepository.EliminarAsync(id);
+            return await _materialRepository.EliminarAsync(id);
         }
 
-        public async Task<Material> ObtenerPorIdAsync(int id)
+        public async Task<MaterialDto> ObtenerPorIdAsync(int id)
         {
-            return await _materialRepository.ObtenerPorIdAsync(id);
+            var material = await _materialRepository.ObtenerPorIdAsync(id);
+            if (material == null)
+                return null;
+
+            return new MaterialDto { 
+                MaterialId = material.MaterialId,
+                Nombre = material.Nombre,
+                CodigoMaterial = material.CodigoMaterial,
+                Estado = material.Estado,
+                SistemaMedicion = material.SistemaMedicion,
+                CategoriaId=material.CategoriaId
+            };
         }
 
-        public async Task<IEnumerable<Material>> ObtenerTodosAsync()
+        public async Task<IEnumerable<MaterialDto>> ObtenerTodosAsync()
         {
-           return await _materialRepository.ObtenerTodosAsync();
+            var materiales = await _materialRepository.ObtenerTodosAsync();
+            return materiales.Select(material => new MaterialDto
+            {
+                MaterialId = material.MaterialId,
+                Nombre = material.Nombre,
+                CodigoMaterial = material.CodigoMaterial,
+                Estado = material.Estado,
+                SistemaMedicion = material.SistemaMedicion,
+                CategoriaId = material.CategoriaId
+            }).ToList();
         }
     }
 }

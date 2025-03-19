@@ -8,10 +8,10 @@ namespace NSoft.Models
         public int CategoriaId { get; set; }
 
         [Required, MaxLength(100)]
-        public string Nombre { get; set; }
+        public required string Nombre { get; set; }
         [MaxLength(100)]
-        public string Descripcion { get; set; }
+        public string? Descripcion { get; set; }
         public bool Estado { get; set; } = true;
-        public ICollection<Material> Materiales { get; set; }
+        public ICollection<Material> Materiales { get; set; } = new List<Material>();
     }
 }

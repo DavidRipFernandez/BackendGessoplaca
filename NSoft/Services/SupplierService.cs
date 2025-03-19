@@ -60,6 +60,30 @@ namespace NSoft.Services
 
         }
 
+        public async Task<bool> AgregarMarcaAlProveedor ( string proveedorId, int marcaId )
+        {
+            try
+            {
+                return await _supplierRepository.AgregarMarcaAlProveedor(proveedorId, marcaId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al agregar marca al proveedor.", ex);
+            }
+        }
+
+        public async Task<bool> DarBajaMarcaAlProveedor ( string proveedorId, int marcaId )
+        {
+            try
+            {
+                return await _supplierRepository.DarBajaMarcaAlProveedor(proveedorId, marcaId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al dar baja de marca al proveedor.", ex);
+            }
+        }
+
         public async Task EliminarAsync ( string id )
         {
             try

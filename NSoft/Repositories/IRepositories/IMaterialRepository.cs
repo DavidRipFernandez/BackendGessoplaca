@@ -8,8 +8,8 @@ namespace NSoft.Repositories.IRepositories
     {
         Task<IEnumerable<Material>> ObtenerTodosAsync();
         Task<Material> ObtenerPorIdAsync(int id);
-        Task AgregarAsync(Material material);
-        Task ActualizarAsync(Material material);
-        Task EliminarAsync(int id);
+        Task<bool> AgregarAsync(Material material);
+        Task<bool> ActualizarAsync(Material material);
+        Task<bool> EliminarAsync(int id);
     }
 }
