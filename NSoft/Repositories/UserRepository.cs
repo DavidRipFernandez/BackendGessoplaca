@@ -96,6 +96,26 @@ namespace NSoft.Repositories
                 throw new Exception("Error al encontrar al usuario", ex);
             }
         }
+        public async Task<bool> DeleteUserAsync(int userId)
+        {
+            try
+            {
+                var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.UsuarioId == userId);
+                if (usuario == null)
+                {
+                    throw new Exception("Usuario no encontrado.");
+                }
+                _context.Usuarios.Remove(usuario);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al eliminar el usuario.", ex);
+            }
+        }
+
+
     }
 }
 

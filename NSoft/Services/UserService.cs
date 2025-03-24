@@ -18,6 +18,29 @@ namespace NSoft.Services
             _logger = logger;
         }
 
+        public async Task<ApiResponse<string>> DeleteUserAsync(int userId)
+        {
+            if (userId <= 0)
+            {
+                return ApiResponse<string>.ErrorResponse("El UsuarioId es inválido.", "EL UsuarioId debe ser mayor a 0.", 400);
+            }
+            try
+            {
+                var result = await _userRepository.DeleteUserAsync(userId);
+                if (!result)
+                {
+                    return ApiResponse<string>.ErrorResponse("El usuario no fue encontrado.", "No se encontró un usuario con ese ID.", 404);
+                }
+                return ApiResponse<string>.SuccessResponse(null,"Usuario Eliminado correctamente.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error en UserService.DeleteUserAsync: {ex.Message}", ex);
+                return ApiResponse<string>.ErrorResponse("Error interno al eliminar el usuario.", ex.Message, 500);
+            }
+
+        }
+
         public async Task<ApiResponse<IEnumerable<UsuarioDTO>>> GetAllUsuariosAsync()
         {
             try
@@ -60,7 +83,6 @@ namespace NSoft.Services
                     "El nombre, el correo y la contraseña son obligatorios.",
                 400);
             }
-           
             try
             {
                 

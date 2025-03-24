@@ -9,5 +9,6 @@ namespace NSoft.Repositories.IRepositories
         Task<IEnumerable<UsuarioDTO>> GetAllUsuariosAsync();
         Task<UsuarioDTO> UpdateUsuarioAsync(UserUpdateDTO dto);
         Task<bool> UserExistAsync(int userId);
+        Task<bool> DeleteUserAsync(int userId);
     }
 }

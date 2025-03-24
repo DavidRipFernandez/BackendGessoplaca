@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NSoft.DTOs;
 using NSoft.Services.IServices;
+using System.Runtime.InteropServices;
 
 
 namespace NSoft.Controllers
@@ -27,6 +28,12 @@ namespace NSoft.Controllers
         public async Task<IActionResult> UpdateUsuario([FromBody] UserUpdateDTO UserUpdate)
         {
             var response = await _usuarioService.UpdateUsuarioAsync(UserUpdate);
+            return StatusCode(response.StatusCode, response);
+        }
+        [HttpDelete("{userId}")]
+        public async Task<IActionResult> DeleteUser(int userId)
+        {
+            var response = await _usuarioService.DeleteUserAsync(userId);
             return StatusCode(response.StatusCode, response);
         }
     }
