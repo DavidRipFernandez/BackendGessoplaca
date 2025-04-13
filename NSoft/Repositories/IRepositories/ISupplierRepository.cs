@@ -6,10 +6,10 @@ namespace NSoft.Repositories.IRepositories
     {
 
         Task<IEnumerable<Proveedor>> ObtenerPorEstadoAsync ( bool estado );
-        Task<Proveedor> ObtenerProveedorConContactosAsync ( string id);
+        Task<Proveedor?> ObtenerProveedorConRelacionesAsync ( string id);
+        Task<Proveedor?> ObtenerPorIdAsync (string id);
         Task<bool> AgregarAsync(Proveedor proveedor);
         Task<bool> ActualizarAsync(Proveedor proveedor);
-        Task<bool> CambiarEstadoAsync ( string id, bool estado )
-        Task<Proveedor> ObtenerProveedorConMarcas (string id);
+        Task<bool> CambiarEstadoAsync ( string id, bool estado );
     }
 }

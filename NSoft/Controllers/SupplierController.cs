@@ -31,17 +31,10 @@ namespace NSoft.Controllers
             return StatusCode(response.StatusCode, response);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> ObtenerPorId ( string id )
+        [HttpGet("detallado/{id}")]
+        public async Task<IActionResult> ObtenerProveedorConTodo ( string id )
         {
-            var response = await _supplierService.ObtenerPorIdAsync(id);
-            return StatusCode(response.StatusCode, response);
-        }
-
-        [HttpGet("con-marcas/{id}")]
-        public async Task<IActionResult> ObtenerProveedorConMarcas ( string id )
-        {
-            var response = await _supplierService.ObtenerProveedorConMarcas(id);
+            var response = await _supplierService.ObtenerProveedorConRelacionesAsync(id);
             return StatusCode(response.StatusCode, response);
         }
 
@@ -72,20 +65,5 @@ namespace NSoft.Controllers
             var response = await _supplierService.ReactivarAsync(id);
             return StatusCode(response.StatusCode, response);
         }
-
-        [HttpPost("asociar-marca")]
-        public async Task<IActionResult> AgregarMarca ( [FromQuery] string proveedorId, [FromQuery] int marcaId )
-        {
-            var response = await _supplierService.AgregarMarcaAlProveedor(proveedorId, marcaId);
-            return StatusCode(response.StatusCode, response);
-        }
-
-        [HttpPut("dar-baja-marca")]
-        public async Task<IActionResult> DarBajaMarca ( [FromQuery] string proveedorId, [FromQuery] int marcaId )
-        {
-            var response = await _supplierService.DarBajaMarcaAlProveedor(proveedorId, marcaId);
-            return StatusCode(response.StatusCode, response);
-        }
-
     }
 }

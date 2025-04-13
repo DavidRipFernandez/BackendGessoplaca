@@ -34,11 +34,27 @@ namespace NSoft.Repositories
             }
         }
 
-        public async Task<Proveedor> ObtenerProveedorConMarcas ( string id )
+        public async Task<Proveedor?> ObtenerPorIdAsync(string id)
+        {
+            try
+            {
+                var proveedor = await _context.Proveedores.FindAsync(id)
+                            ?? throw new KeyNotFoundException($"No se encontró el proveedor con ID {id}");
+                return proveedor;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener el proveedor con ID {id}.", id);
+                throw new Exception("Error al obtener el proveedor.", ex);
+            }
+        }
+
+        public async Task<Proveedor?> ObtenerProveedorConRelacionesAsync ( string id )
         {
             try
             {
                 var supplier = await _context.Proveedores
+                    .Include(p => p.Contactos)
                     .Include(p => p.ProveedoresMarcas)
                     .ThenInclude(pm => pm.Marca)
                     .AsNoTracking()
@@ -50,27 +66,8 @@ namespace NSoft.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error inesperado al obtener al proveedor con ID {ProveedorCifId}", id);
-                throw new Exception("Error inesperado al obtener al proveedor.", ex);
-            }
-        }
-
-        public async Task<Proveedor> ObtenerProveedorConContactosAsync ( string id )
-        {
-            try
-            {
-                var proveedor = await _context.Proveedores
-                    .Include(p => p.Contactos)
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(p => p.ProveedorCifId == id)
-                    ?? throw new KeyNotFoundException($"No se encontró al proveedor con Id {id}");
-
-                return proveedor;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al obtener proveedor con contactos por ID {ProveedorCifId}.", id);
-                throw new Exception("Error al obtener proveedor con contactos.", ex);
+                _logger.LogError(ex, "Error al obtener proveedor con relaciones para el ID {ProveedorCifId}", id);
+                throw new Exception("Error inesperado al obtener proveedor con relaciones.", ex);
             }
         }
 

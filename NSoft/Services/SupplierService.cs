@@ -69,38 +69,14 @@ namespace NSoft.Services
             }
         }
 
-        public async Task<ApiResponse<ProveedorDto>> ObtenerPorIdAsync ( string id )
+        public async Task<ApiResponse<ProveedorDto>> ObtenerProveedorConRelacionesAsync ( string id )
         {
             try
             {
-                var proveedor = await _supplierRepository.ObtenerPorIdAsync(id);
-                if (proveedor == null)
+                var proveedor = await _supplierRepository.ObtenerProveedorConRelacionesAsync(id);
+                if (proveedor is null)
                     return ApiResponse<ProveedorDto>.ErrorResponse(
                         "Proveedor no encontrado.", $"No se encontró el proveedor con ID {id}.", 404);
-
-                var resultado = new ProveedorDto
-                {
-                    ProveedorCifId = proveedor.ProveedorCifId,
-                    Nombre = proveedor.Nombre,
-                    DomicilioSocial = proveedor.DomicilioSocial,
-                };
-
-                return ApiResponse<ProveedorDto>.SuccessResponse(resultado,"Operacion exitosa");
-            }
-            catch (Exception ex)
-            {
-                return ApiResponse<ProveedorDto>.ErrorResponse("Error al obtener proveedor.",
-                    ex.Message, 500);
-            }
-        }
-
-        public async Task<ApiResponse<ProveedorDto>> ObtenerProveedorConMarcas ( string id )
-        {
-            try
-            {
-                var proveedor = await _supplierRepository.ObtenerPorIdAsync(id);
-                if (proveedor == null)
-                    return ApiResponse<ProveedorDto>.ErrorResponse("Proveedor no encontrado.", $"No se encontró el proveedor con ID {id}.", 404);
 
                 var resultado = new ProveedorDto
                 {
@@ -114,14 +90,22 @@ namespace NSoft.Services
                         Correo = c.Correo,
                         Telefono = c.Telefono,
                         Descripcion = c.Descripcion
+                    }).ToList(),
+                    Marcas = proveedor.ProveedoresMarcas.Where(pm => pm.Marca != null).Select(pm => new MarcaDto
+                    {
+                        MarcaId = pm.Marca.MarcaId,
+                        Nombre = pm.Marca.Nombre,
+                        Descripcion = pm.Marca.Descripcion,
+                        Estado = pm.Marca.Estado
                     }).ToList()
                 };
 
-                return ApiResponse<ProveedorDto>.SuccessResponse(resultado, "Operacion exitosa.");
+                return ApiResponse<ProveedorDto>.SuccessResponse(resultado,"Operacion exitosa");
             }
             catch (Exception ex)
             {
-                return ApiResponse<ProveedorDto>.ErrorResponse("Error al obtener proveedor con marcas.", ex.Message, 500);
+                return ApiResponse<ProveedorDto>.ErrorResponse("Error al obtener proveedor.",
+                    ex.Message, 500);
             }
         }
 
@@ -175,7 +159,7 @@ namespace NSoft.Services
         {
             try
             {
-                var result = await _supplierRepository.EliminarAsync(id);
+                var result = await _supplierRepository.CambiarEstadoAsync(id,false);
                 return result
                     ? ApiResponse<bool>.SuccessResponse(true, "Proveedor eliminado correctamente.")
                     : ApiResponse<bool>.ErrorResponse("No se pudo eliminar el proveedor.", "Fallo en el repositorio.", 500);
@@ -190,7 +174,7 @@ namespace NSoft.Services
         {
             try
             {
-                var result = await _supplierRepository.ReactivarAsync(id);
+                var result = await _supplierRepository.CambiarEstadoAsync(id, true);
                 return result
                     ? ApiResponse<bool>.SuccessResponse(true, "Proveedor reactivado correctamente.")
                     : ApiResponse<bool>.ErrorResponse("No se pudo reactivar el proveedor.", "Fallo en el repositorio.", 500);
@@ -200,36 +184,5 @@ namespace NSoft.Services
                 return ApiResponse<bool>.ErrorResponse("Error al reactivar proveedor.", ex.Message, 500);
             }
         }
-
-        public async Task<ApiResponse<bool>> AgregarMarcaAlProveedor ( string proveedorId, int marcaId )
-        {
-            try
-            {
-                var result = await _supplierRepository.AgregarMarcaAlProveedor(proveedorId, marcaId);
-                return result
-                    ? ApiResponse<bool>.SuccessResponse(true, "Marca agregada al proveedor correctamente.")
-                    : ApiResponse<bool>.ErrorResponse("No se pudo agregar la marca al proveedor.", "Fallo en el repositorio.", 500);
-            }
-            catch (Exception ex)
-            {
-                return ApiResponse<bool>.ErrorResponse("Error al agregar marca al proveedor.", ex.Message, 500);
-            }
-        }
-
-        public async Task<ApiResponse<bool>> DarBajaMarcaAlProveedor ( string proveedorId, int marcaId )
-        {
-            try
-            {
-                var result = await _supplierRepository.DarBajaMarcaAlProveedor(proveedorId, marcaId);
-                return result
-                    ? ApiResponse<bool>.SuccessResponse(true, "Marca dada de baja correctamente.")
-                    : ApiResponse<bool>.ErrorResponse("No se pudo dar de baja la marca.", "Fallo en el repositorio.", 500);
-            }
-            catch (Exception ex)
-            {
-                return ApiResponse<bool>.ErrorResponse("Error al dar de baja la marca al proveedor.", ex.Message, 500);
-            }
-        }
-
     }
 }
