@@ -11,6 +11,6 @@ namespace NSoft.DTOs
         public string? SistemaMedicion { get; set; }
         public bool Estado { get; set; } = true;
         public int CategoriaId { get; set; }
-
+        public CategoriaMaterialDto? Categoria { get; set; }
     }
 }

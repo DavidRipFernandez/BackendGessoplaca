@@ -48,6 +48,8 @@ foreach (var env in Environment.GetEnvironmentVariables().Keys)
 }
 
 //configurar el archivo de configuracion
+builder.Services.AddScoped<ICategoriaMaterialRepository, CategoriaMaterialRepository>();
+builder.Services.AddScoped<ICategoriaMaterialService, CategoriaMaterialService>();
 builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
 builder.Services.AddScoped<IMaterialService, MaterialService>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
