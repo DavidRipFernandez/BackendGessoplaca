@@ -5,11 +5,11 @@ namespace NSoft.Repositories.IRepositories
     public interface ISupplierRepository
     {
 
-        Task<IEnumerable<Proveedor>> ObtenerTodosAsync();
-        Task<Proveedor> ObtenerPorIdAsync(string id);
-        Task AgregarAsync(Proveedor proveedor);
+        Task<IEnumerable<Proveedor>> ObtenerPorEstadoAsync ( bool estado );
+        Task<Proveedor?> ObtenerProveedorConRelacionesAsync ( string id);
+        Task<Proveedor?> ObtenerPorIdAsync (string id);
+        Task<bool> AgregarAsync(Proveedor proveedor);
         Task<bool> ActualizarAsync(Proveedor proveedor);
-        Task<bool> EliminarAsync(string id);
-
+        Task<bool> CambiarEstadoAsync ( string id, bool estado );
     }
 }

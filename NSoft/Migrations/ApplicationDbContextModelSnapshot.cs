@@ -34,14 +34,13 @@ namespace NSoft.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Descripcion")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("Estado")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("FechaCreacion")
+                    b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("FechaModificacion")
@@ -82,7 +81,7 @@ namespace NSoft.Migrations
                     b.Property<bool>("Estado")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("FechaCreacion")
+                    b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("FechaModificacion")
@@ -125,14 +124,13 @@ namespace NSoft.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Descripcion")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("Estado")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("FechaCreacion")
+                    b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("FechaModificacion")
@@ -162,9 +160,6 @@ namespace NSoft.Migrations
                     b.Property<int>("CategoriaId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CategoriasMaterialesCategoriaId")
-                        .HasColumnType("int");
-
                     b.Property<string>("CodigoMaterial")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -176,7 +171,7 @@ namespace NSoft.Migrations
                     b.Property<bool>("Estado")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("FechaCreacion")
+                    b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("FechaModificacion")
@@ -191,13 +186,12 @@ namespace NSoft.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("SistemaMedicion")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("MaterialId");
 
-                    b.HasIndex("CategoriasMaterialesCategoriaId");
+                    b.HasIndex("CategoriaId");
 
                     b.ToTable("Materiales");
                 });
@@ -220,7 +214,7 @@ namespace NSoft.Migrations
                     b.Property<bool>("Estado")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("FechaCreacion")
+                    b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("FechaModificacion")
@@ -250,26 +244,28 @@ namespace NSoft.Migrations
 
             modelBuilder.Entity("NSoft.Models.PrecioTarifa", b =>
                 {
-                    b.Property<int>("PrecioTarifaId")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("MaterialId")
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PrecioTarifaId"));
+                    b.Property<string>("ProveedorCifId")
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("MarcaId")
+                        .HasColumnType("int");
 
                     b.Property<int?>("CreadoPor")
                         .HasColumnType("int");
 
                     b.Property<bool>("Estado")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
-                    b.Property<DateTime?>("FechaCreacion")
+                    b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("FechaModificacion")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("MaterialId")
-                        .HasColumnType("int");
 
                     b.Property<int?>("ModificadoPor")
                         .HasColumnType("int");
@@ -277,21 +273,9 @@ namespace NSoft.Migrations
                     b.Property<decimal>("Precio")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("ProveedorMarcaId")
-                        .HasColumnType("int");
+                    b.HasKey("MaterialId", "ProveedorCifId", "MarcaId");
 
-                    b.Property<int>("ProveedoresMarcasMarcaId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ProveedoresMarcasProveedorCifId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("PrecioTarifaId");
-
-                    b.HasIndex("MaterialId");
-
-                    b.HasIndex("ProveedoresMarcasProveedorCifId", "ProveedoresMarcasMarcaId");
+                    b.HasIndex("ProveedorCifId", "MarcaId");
 
                     b.ToTable("PreciosTarifas");
                 });
@@ -315,7 +299,7 @@ namespace NSoft.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
-                    b.Property<DateTime?>("FechaCreacion")
+                    b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("FechaModificacion")
@@ -337,10 +321,12 @@ namespace NSoft.Migrations
             modelBuilder.Entity("NSoft.Models.ProveedorMarca", b =>
                 {
                     b.Property<string>("ProveedorCifId")
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnOrder(0);
 
                     b.Property<int>("MarcaId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnOrder(1);
 
                     b.Property<int?>("CreadoPor")
                         .HasColumnType("int");
@@ -350,7 +336,7 @@ namespace NSoft.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
-                    b.Property<DateTime?>("FechaCreacion")
+                    b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("FechaModificacion")
@@ -387,7 +373,7 @@ namespace NSoft.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
-                    b.Property<DateTime?>("FechaCreacion")
+                    b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("FechaModificacion")
@@ -429,7 +415,7 @@ namespace NSoft.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
-                    b.Property<DateTime?>("FechaCreacion")
+                    b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("FechaModificacion")
@@ -465,7 +451,7 @@ namespace NSoft.Migrations
                     b.Property<bool>("Estado")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime?>("FechaCreacion")
+                    b.Property<DateTime>("FechaCreacion")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("FechaModificacion")
@@ -554,32 +540,32 @@ namespace NSoft.Migrations
 
             modelBuilder.Entity("NSoft.Models.Material", b =>
                 {
-                    b.HasOne("NSoft.Models.CategoriaMaterial", "CategoriasMateriales")
+                    b.HasOne("NSoft.Models.CategoriaMaterial", "CategoriasMaterial")
                         .WithMany("Materiales")
-                        .HasForeignKey("CategoriasMaterialesCategoriaId")
+                        .HasForeignKey("CategoriaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CategoriasMateriales");
+                    b.Navigation("CategoriasMaterial");
                 });
 
             modelBuilder.Entity("NSoft.Models.PrecioTarifa", b =>
                 {
-                    b.HasOne("NSoft.Models.Material", "Materiales")
-                        .WithMany()
+                    b.HasOne("NSoft.Models.Material", "Material")
+                        .WithMany("precioTarifas")
                         .HasForeignKey("MaterialId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NSoft.Models.ProveedorMarca", "ProveedoresMarcas")
-                        .WithMany()
-                        .HasForeignKey("ProveedoresMarcasProveedorCifId", "ProveedoresMarcasMarcaId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("NSoft.Models.ProveedorMarca", "ProveedorMarca")
+                        .WithMany("PrecioTarifa")
+                        .HasForeignKey("ProveedorCifId", "MarcaId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Materiales");
+                    b.Navigation("Material");
 
-                    b.Navigation("ProveedoresMarcas");
+                    b.Navigation("ProveedorMarca");
                 });
 
             modelBuilder.Entity("NSoft.Models.ProveedorMarca", b =>
@@ -649,6 +635,11 @@ namespace NSoft.Migrations
                     b.Navigation("ProveedoresMarcas");
                 });
 
+            modelBuilder.Entity("NSoft.Models.Material", b =>
+                {
+                    b.Navigation("precioTarifas");
+                });
+
             modelBuilder.Entity("NSoft.Models.Modulo", b =>
                 {
                     b.Navigation("RolesModulos");
@@ -659,6 +650,11 @@ namespace NSoft.Migrations
                     b.Navigation("Contactos");
 
                     b.Navigation("ProveedoresMarcas");
+                });
+
+            modelBuilder.Entity("NSoft.Models.ProveedorMarca", b =>
+                {
+                    b.Navigation("PrecioTarifa");
                 });
 
             modelBuilder.Entity("NSoft.Models.Rol", b =>

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NSoft.DTOs;
 using NSoft.Models;
 using NSoft.Services.IServices;
 
@@ -15,34 +16,54 @@ namespace NSoft.Controllers
         {
             _materialService = materialService;
         }
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Material>>> Get() => Ok(await _materialService.ObtenerTodosAsync());
-        
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Material>> Get(int id)
+
+        [HttpGet("activos")]
+        public async Task<IActionResult> ObtenerActivos ()
         {
-            var material = await _materialService.ObtenerPorIdAsync(id);
-            if (material == null) return NotFound();
-            return Ok(material);
+            var response = await _materialService.ObtenerActivosAsync();
+            return StatusCode(response.StatusCode, response);
         }
+
+        [HttpGet("eliminados")]
+        public async Task<IActionResult> ObtenerEliminados ()
+        {
+            var response = await _materialService.ObtenerEliminadosAsync();
+            return StatusCode(response.StatusCode, response);
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> ObtenerPorId ( int id )
+        {
+            var response = await _materialService.ObtenerPorIdConCategoriaAsync(id);
+            return StatusCode(response.StatusCode, response);
+        }
+
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Material material)
+        public async Task<IActionResult> Agregar ( [FromBody] MaterialDto material )
         {
-            await _materialService.AgregarAsync(material);
-            return CreatedAtAction(nameof(Get), new { id = material.MaterialId }, material);
+            var response = await _materialService.AgregarAsync(material);
+            return StatusCode(response.StatusCode, response);
         }
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] Material material)
+
+        [HttpPut]
+        public async Task<IActionResult> Actualizar ( [FromBody] MaterialDto material )
         {
-            if (id != material.MaterialId) return BadRequest();
-            await _materialService.ActualizarAsync(material);
-            return NoContent();
+            var response = await _materialService.ActualizarAsync(material);
+            return StatusCode(response.StatusCode, response);
         }
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Eliminar ( int id )
         {
-            await _materialService.EliminarAsync(id);
-            return NoContent();
+            var response = await _materialService.EliminarAsync(id);
+            return StatusCode(response.StatusCode, response);
+        }
+
+        [HttpPut("reactivar/{id:int}")]
+        public async Task<IActionResult> Reactivar ( int id )
+        {
+            var response = await _materialService.ReactivarAsync(id);
+            return StatusCode(response.StatusCode, response);
         }
     }
 }

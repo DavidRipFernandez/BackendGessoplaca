@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NSoft.DTOs;
 using NSoft.Models;
 using NSoft.Services.IServices;
 
@@ -16,62 +17,53 @@ namespace NSoft.Controllers
             _supplierService = supplierService;
         }
 
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<Proveedor>>> Get ()
+        [HttpGet("activos")]
+        public async Task<IActionResult> ObtenerActivos ()
         {
-            var contactos = await _supplierService.ObtenerTodosAsync();
-            return Ok(contactos);
+            var response = await _supplierService.ObtenerActivosAsync();
+            return StatusCode(response.StatusCode, response);
         }
 
-        [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Proveedor>> Get ( string id )
+        [HttpGet("eliminados")]
+        public async Task<IActionResult> ObtenerEliminados ()
         {
-            var supplier = await _supplierService.ObtenerPorIdAsync(id);
-            if (supplier == null)
-            {
-                return NotFound($"No se encontró un proveedor con ID {id}");
-            }
-            return Ok(supplier);
+            var response = await _supplierService.ObtenerEliminadosAsync();
+            return StatusCode(response.StatusCode, response);
+        }
+
+        [HttpGet("detallado/{id}")]
+        public async Task<IActionResult> ObtenerProveedorConTodo ( string id )
+        {
+            var response = await _supplierService.ObtenerProveedorConRelacionesAsync(id);
+            return StatusCode(response.StatusCode, response);
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Post ( [FromBody] Proveedor supplier )
+        public async Task<IActionResult> Agregar ( [FromBody] ProveedorDto proveedor )
         {
-            if (supplier == null)
-            {
-                return BadRequest("El contacto no puede ser nulo.");
-            }
-
-            await _supplierService.AgregarAsync(supplier);
-            return CreatedAtAction(nameof(Get), new { id = supplier.ProveedorCifId }, supplier);
+            var response = await _supplierService.AgregarAsync(proveedor);
+            return StatusCode(response.StatusCode, response);
         }
 
-        [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Put ( string id, [FromBody] Proveedor supplier )
+        [HttpPut]
+        public async Task<IActionResult> Actualizar ([FromBody] ProveedorDto proveedor )
         {
-            if (supplier == null)
-            {
-                return BadRequest("El ID del contacto no coincide o el objeto es nulo.");
-            }
-
-            await _supplierService.ActualizarAsync(supplier);
-            return NoContent();
+            var response = await _supplierService.ActualizarAsync(proveedor);
+            return StatusCode(response.StatusCode, response);
         }
 
         [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> Delete ( string id )
+        public async Task<IActionResult> Eliminar ( string id )
         {
-            await _supplierService.EliminarAsync(id);
-            return NoContent();
+            var response = await _supplierService.EliminarAsync(id);
+            return StatusCode(response.StatusCode, response);
         }
 
+        [HttpPut("reactivar/{id}")]
+        public async Task<IActionResult> Reactivar ( string id )
+        {
+            var response = await _supplierService.ReactivarAsync(id);
+            return StatusCode(response.StatusCode, response);
+        }
     }
 }

@@ -48,14 +48,31 @@ foreach (var env in Environment.GetEnvironmentVariables().Keys)
 }
 
 //configurar el archivo de configuracion
+//categoria
+builder.Services.AddScoped<ICategoriaMaterialRepository, CategoriaMaterialRepository>();
+builder.Services.AddScoped<ICategoriaMaterialService, CategoriaMaterialService>();
+//ProveedorMarca
+builder.Services.AddScoped<IProveedorMarcaRepository, ProveedorMarcaRepository>();
+builder.Services.AddScoped<IProveedorMarcaService, ProveedorMarcaService>();
+//PrecioTarifa
+builder.Services.AddScoped<IPrecioTarifaRepository, PrecioTarifaRepository>();
+builder.Services.AddScoped<IPrecioTarifaService, PrecioTarifaService>();
+//Marca
+builder.Services.AddScoped<IMarcaRepository, MarcaRepository>();
+builder.Services.AddScoped<IMarcaService, MarcaService>();
+//Material
 builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
 builder.Services.AddScoped<IMaterialService, MaterialService>();
+//Auth
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IAuthService, AuthServices>();
+//Contacto
 builder.Services.AddScoped<IContactRepository, ContactRepository>();
 builder.Services.AddScoped<IContactService, ContactService>();
+//proveedor
 builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
+//User
 builder.Services.AddScoped<IUserRepository, UserRepository>();  
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IModulePermissionRepository, ModulePermissionRepository>();

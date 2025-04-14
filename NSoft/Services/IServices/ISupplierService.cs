@@ -5,10 +5,12 @@ namespace NSoft.Services.IServices
 {
     public interface ISupplierService
     {
-        Task<IEnumerable<Proveedor>> ObtenerTodosAsync();
-        Task<SupplierDTO> ObtenerPorIdAsync(string id);
-        Task AgregarAsync(Proveedor contacto);
-        Task ActualizarAsync(Proveedor contacto);
-        Task EliminarAsync(string id);
+        Task<ApiResponse<List<ProveedorDto>>> ObtenerActivosAsync ();
+        Task<ApiResponse<List<ProveedorDto>>> ObtenerEliminadosAsync ();
+        Task<ApiResponse<ProveedorDto>> ObtenerProveedorConRelacionesAsync ( string id);
+        Task<ApiResponse<bool>> AgregarAsync (ProveedorDto proveedor);
+        Task<ApiResponse<bool>> ActualizarAsync (ProveedorDto proveedor);
+        Task<ApiResponse<bool>> EliminarAsync (string id);
+        Task<ApiResponse<bool>> ReactivarAsync ( string id );
     }
 }

@@ -1,13 +1,16 @@
-﻿using NSoft.Models;
+﻿using NSoft.DTOs;
+using NSoft.Models;
 
 namespace NSoft.Services.IServices
 {
     public interface IMaterialService
     {
-        Task<IEnumerable<Material>> ObtenerTodosAsync();
-        Task<Material> ObtenerPorIdAsync(int id);
-        Task AgregarAsync(Material material);
-        Task ActualizarAsync(Material material);
-        Task EliminarAsync(int id);
+        Task<ApiResponse<List<MaterialDto>>> ObtenerActivosAsync ();
+        Task<ApiResponse<List<MaterialDto>>> ObtenerEliminadosAsync ();
+        Task<ApiResponse<MaterialDto>> ObtenerPorIdConCategoriaAsync ( int id );
+        Task<ApiResponse<bool>> AgregarAsync ( MaterialDto dto );
+        Task<ApiResponse<bool>> ActualizarAsync ( MaterialDto dto );
+        Task<ApiResponse<bool>> EliminarAsync ( int id );
+        Task<ApiResponse<bool>> ReactivarAsync ( int id );
     }
 }

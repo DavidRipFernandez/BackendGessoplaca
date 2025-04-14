@@ -4,11 +4,12 @@ namespace NSoft.Repositories.IRepositories
 {
     public interface IContactRepository
     {
-        Task<IEnumerable<Contacto>> ObtenerTodosAsync();
+        Task<IEnumerable<Contacto>> ObtenerPorEstadoConProveedorAsync ( bool estado );
         Task<Contacto> ObtenerPorIdAsync(int id);
-        Task AgregarAsync(Contacto contact);
+        Task<IEnumerable<Contacto>> ObtenerPorNombreAsync ( string nombre );
+        Task<bool> AgregarAsync(Contacto contact);
         Task<bool> ActualizarAsync(Contacto contact);
-        Task<bool> EliminarAsync(int id);
+        Task<bool> CambiarEstadoAsync ( int id, bool nuevoEstado );
 
     }
 }

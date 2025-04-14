@@ -27,7 +27,7 @@ namespace NSoft.DTOs
 
         public static ApiResponse<T> ErrorResponse(string message, string technicalMessage, int statusCode)
         {
-            return new ApiResponse<T>(message, technicalMessage, default, statusCode,false);
+            return new ApiResponse<T>(message, technicalMessage, default!, statusCode,false);
         }
 
     }

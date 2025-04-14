@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NSoft.DTOs;
 using NSoft.Models;
 using NSoft.Services.IServices;
 
@@ -17,61 +18,60 @@ namespace NSoft.Controllers
             _contactService = contactService;
         }
 
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<Contacto>>> Get ()
+        [HttpGet("activos")]
+        public async Task<IActionResult> ObtenerActivos ()
         {
-            var contactos = await _contactService.ObtenerTodosAsync();
-            return Ok(contactos);
+            var response = await _contactService.ObtenerActivosPorProveedorAsync();
+            return StatusCode(response.StatusCode, response);
         }
 
-        [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Contacto>> Get ( int id )
+        [HttpGet("eliminados")]
+        public async Task<IActionResult> ObtenerEliminados ()
         {
-            var contacto = await _contactService.ObtenerPorIdAsync(id);
-            if (contacto == null)
-            {
-                return NotFound($"No se encontró un contacto con ID {id}");
-            }
-            return Ok(contacto);
+            var response = await _contactService.ObtenerEliminadosPorProveedorAsync();
+            return StatusCode(response.StatusCode, response);
+        }
+
+        [HttpGet("buscar")]
+        public async Task<IActionResult> BuscarPorNombre ( [FromQuery] string nombre )
+        {
+            var response = await _contactService.ObtenerPorNombreAsync(nombre);
+            return StatusCode(response.StatusCode, response);
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> ObtenerPorId ( int id )
+        {
+            var response = await _contactService.ObtenerPorIdAsync(id);
+            return StatusCode(response.StatusCode, response);
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Post ( [FromBody] Contacto contacto )
+        public async Task<IActionResult> Agregar ( [FromBody] ContactoDto dto )
         {
-            if (contacto == null)
-            {
-                return BadRequest("El contacto no puede ser nulo.");
-            }
-
-            await _contactService.AgregarAsync(contacto);
-            return CreatedAtAction(nameof(Get), new { id = contacto.ContactoId }, contacto);
+            var response = await _contactService.AgregarAsync(dto);
+            return StatusCode(response.StatusCode, response);
         }
 
-        [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Put ( int id, [FromBody] Contacto contacto )
+        [HttpPut]
+        public async Task<IActionResult> Actualizar ( [FromBody] ContactoDto dto )
         {
-            if (contacto == null || id != contacto.ContactoId)
-            {
-                return BadRequest("El ID del contacto no coincide o el objeto es nulo.");
-            }
-
-            await _contactService.ActualizarAsync(contacto);
-            return NoContent();
+            var response = await _contactService.ActualizarAsync(dto);
+            return StatusCode(response.StatusCode, response);
         }
 
-        [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> Delete ( int id )
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Eliminar ( int id )
         {
-            await _contactService.EliminarAsync(id);
-            return NoContent();
+            var response = await _contactService.EliminarAsync(id);
+            return StatusCode(response.StatusCode, response);
+        }
+
+        [HttpPut("reactivar/{id:int}")]
+        public async Task<IActionResult> Reactivar ( int id )
+        {
+            var response = await _contactService.ReactivarAsync(id);
+            return StatusCode(response.StatusCode, response);
         }
 
     }

@@ -8,10 +8,10 @@ namespace NSoft.Models
         public int MarcaId { get; set; }
 
         [Required, MaxLength(100)]
-        public string Nombre { get; set; }
+        public required string Nombre { get; set; }
         [MaxLength(100)]
-        public string Descripcion { get; set; }
+        public string? Descripcion { get; set; }
         public bool Estado { get; set; } = true;
-        public ICollection<ProveedorMarca> ProveedoresMarcas { get; set; }
+        public ICollection<ProveedorMarca> ProveedoresMarcas { get; set; } = new List<ProveedorMarca>();
     }
 }
