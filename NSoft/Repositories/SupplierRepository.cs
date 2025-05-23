@@ -17,18 +17,25 @@ namespace NSoft.Repositories
             _logger = logger;
         }
 
-        public async Task<IEnumerable<Proveedor>> ObtenerPorEstadoAsync ( bool estado )
+        public async Task<IEnumerable<Proveedor>> ObtenerProveedoresAsync ( bool? estado=null )
         {
             try
             {
-                return await _context.Proveedores
+                var query = _context.Proveedores
                     .AsNoTracking()
-                    .Where(p => p.Estado == estado)
-                    .ToListAsync();
+                    .Include(p =>p.Contactos)
+                    .AsQueryable();
+                
+                if (estado.HasValue)
+                    query = query.Where (p => p.Estado == estado.Value);
+
+                return await query.ToListAsync();
+
             }
             catch (Exception ex)
             {
-                var estadoTexto = estado ? "activos" : "eliminados";
+                var estadoTexto = estado.HasValue ? (estado.Value ? "activos" : "eliminados")
+                    : "todos";
                 _logger.LogError(ex, "Error al obtener proveedores {Estado}.", estadoTexto);
                 throw new Exception($"Error al obtener proveedores {estadoTexto}.", ex);
             }

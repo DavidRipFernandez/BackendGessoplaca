@@ -17,6 +17,13 @@ namespace NSoft.Controllers
             _supplierService = supplierService;
         }
 
+        [HttpGet()]
+        public async Task<IActionResult> Obtener ()
+        {
+            var response = await _supplierService.ObtenerTodosAsync();
+            return StatusCode(response.StatusCode, response);
+        }
+
         [HttpGet("activos")]
         public async Task<IActionResult> ObtenerActivos ()
         {

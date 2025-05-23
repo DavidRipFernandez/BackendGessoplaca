@@ -34,11 +34,27 @@ namespace NSoft.Services
             }).ToList();
         }
 
+        public async Task<ApiResponse<List<ProveedorDto>>> ObtenerTodosAsync ()
+        {
+            try
+            {
+                var proveedores = await _supplierRepository.ObtenerProveedoresAsync(null);
+                var listaproveedores = MapearAProveedorDto(proveedores);
+
+                return ApiResponse<List<ProveedorDto>>.SuccessResponse(listaproveedores, "Proveedores obtenidos correctamente");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<List<ProveedorDto>>.ErrorResponse(
+                    "Ocurrio un error al obtener los proveedores",
+                    ex.Message, 500);
+            }
+        }
         public async Task<ApiResponse<List<ProveedorDto>>> ObtenerActivosAsync ()
         {
             try
             {
-                var proveedores = await _supplierRepository.ObtenerPorEstadoAsync(true);
+                var proveedores = await _supplierRepository.ObtenerProveedoresAsync(true);
                 var listaproveedores = MapearAProveedorDto(proveedores);
 
                 return ApiResponse<List<ProveedorDto>>.SuccessResponse(listaproveedores, "Proveedores activos obtenidos correctamente");
@@ -55,7 +71,7 @@ namespace NSoft.Services
         {
             try
             {
-                var proveedores = await _supplierRepository.ObtenerPorEstadoAsync(false);
+                var proveedores = await _supplierRepository.ObtenerProveedoresAsync(false);
                 var listaproveedores = MapearAProveedorDto(proveedores);
 
                 return ApiResponse<List<ProveedorDto>>.SuccessResponse(listaproveedores,
