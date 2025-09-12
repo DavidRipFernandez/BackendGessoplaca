@@ -22,7 +22,8 @@ namespace NSoft.Controllers
             return StatusCode(response.StatusCode, response);
 
         }
-
+        [HttpPost]
+        [Route("create")]
         public async Task<IActionResult> CreateRole([FromBody] RoleCreatedDTO dto)
         {
             if (dto == null)

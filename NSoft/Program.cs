@@ -9,7 +9,7 @@ using System.Text;
 using NSoft.Middleware;
 using NSoft.Services.IServices;
 using NSoft.Repositories.IRepositories;
-
+using Microsoft.OpenApi.Models;
 var corsPolicy = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +27,6 @@ builder.Services.AddCors(options =>
 
 // Detectar el entorno actual (Development, Production, etc.)
 var environment = builder.Environment.EnvironmentName;
-
 Console.WriteLine($"Ejecutando en entorno: {environment}");
 
 //configura el archivo de configuración según el entorno
@@ -38,14 +37,24 @@ builder.Configuration
     .AddEnvironmentVariables(); //permite variables de entorno de docker
 
 // Obtener la cadena de conexion desde appsettings.json
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+//var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");  before
 
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+options.UseSqlServer(builder.Configuration.GetConnectionString("ConexionSql")));
 
-// Mostrar todas las variables de entorno dentro del contenedor
+//Opcional Mostrar todas las variables de entorno dentro del contenedor
+foreach (var key in Environment.GetEnvironmentVariables().Keys)
+{
+    Console.WriteLine($"{key} ={Environment.GetEnvironmentVariable(key!.ToString()!)}");
+}
+
+/*  BEFORE
+Mostrar todas las variables de entorno dentro del contenedor
 foreach (var env in Environment.GetEnvironmentVariables().Keys)
 {
     Console.WriteLine($"{env} = {Environment.GetEnvironmentVariable(env.ToString())}");
 }
+*/
 
 //configurar el archivo de configuracion
 //categoria
@@ -73,7 +82,7 @@ builder.Services.AddScoped<IContactService, ContactService>();
 builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
 //User
-builder.Services.AddScoped<IUserRepository, UserRepository>();  
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IModulePermissionRepository, ModulePermissionRepository>();
 builder.Services.AddScoped<IModulePermissionService, ModulePermissionService>();
@@ -83,8 +92,10 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddDbContext<ApplicationDbContext>(options =>options.UseSqlServer(connectionString));
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>options.UseSqlServer(connectionString)); -> before
 
+
+//autenticacion JWT
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -104,26 +115,69 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         //options.TokenValidationParameters.RoleClaimType = "rolId";
     });
 
+builder.Services.AddAuthorization();
+
+//Swagger + esquema de seguridad JWT
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "SalesSystem API", Version = "v1" });
+
+    var jwtScheme = new OpenApiSecurityScheme
+    {
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Description = "**Redhat98",
+        Reference = new OpenApiReference { Id = "Bearer", Type = ReferenceType.SecurityScheme }
+    };
+
+    c.AddSecurityDefinition(jwtScheme.Reference.Id, jwtScheme);
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { jwtScheme, Array.Empty<string>() }
+    });
+});
+
 
 var app = builder.Build();
 
-//Mostrando el entorno actual en consola
-Console.WriteLine($"Ejecutando en entorno : {environment}");
 
+Console.WriteLine($"Ejecutando en entorno : {environment}");
 if (environment == "Development")
 {
-    //configuraciones adicionales para desarrollo
     app.UseDeveloperExceptionPage();
 }
 
-// Configure the HTTP request pipeline.
-
+// HTTPS + CORS
 app.UseHttpsRedirection();
 app.UseCors(corsPolicy);
+//Auth
 app.UseAuthentication();
 app.UseMiddleware<SecurityStampMiddleware>();
 app.UseAuthorization();
+// Swagger (siempre activo; si quieres solo en Dev, muévelo al if de arriba)
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "SalesSystem API v1");
+    // c.RoutePrefix = string.Empty; // descomenta si quieres Swagger en la raíz "/"
+});
+
+// Logging simple de requests/responses (antes de MapControllers)
+app.Use(async (context, next) =>
+{
+    Console.WriteLine($"Request: {context.Request.Method} {context.Request.Path}");
+    Console.WriteLine($"Authorization Header: {context.Request.Headers["Authorization"]}");
+    await next.Invoke();
+    Console.WriteLine($"Response Status Code: {context.Response.StatusCode}");
+});
+
+
+
 app.MapControllers();
+/*
 app.Use(async (context, next) =>
 {
     Console.WriteLine($"Request: {context.Request.Method} {context.Request.Path}");
@@ -132,6 +186,8 @@ app.Use(async (context, next) =>
     Console.WriteLine($"Response Status Code: {context.Response.StatusCode}");
 });
 //builder.WebHost.UseUrls("http://0.0.0.0:8080", "https://0.0.0.0:8081");
+*/
+
 app.Run();
 
 /*
@@ -143,4 +199,3 @@ app.Run();
    });
 
  */
-
