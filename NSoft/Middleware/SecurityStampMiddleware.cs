@@ -1,6 +1,6 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using NSoft.Data;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace NSoft.Middleware
 {
@@ -8,60 +8,63 @@ namespace NSoft.Middleware
     {
         private readonly RequestDelegate _next;
 
-        public SecurityStampMiddleware(RequestDelegate next)
-        {
-            _next = next;
-        }
+        // Rutas que NO pasan por el chequeo del sello (swagger, auth, health, preflight CORS)
+        private static readonly string[] _excludedStartsWith = { "/swagger" };
+        private static readonly string[] _excludedContains = { "/api/auth/login", "/api/auth/register", "/health" };
+
+        public SecurityStampMiddleware(RequestDelegate next) => _next = next;
 
         public async Task Invoke(HttpContext context)
         {
-            var dbContext = context.RequestServices.GetRequiredService<ApplicationDbContext>();
-            var authorizationHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+            var path = context.Request.Path.Value?.ToLower() ?? string.Empty;
 
-            // Excluir cierto endpoints del middleware
-            var path = context.Request.Path.Value.ToLower();
-            if (path.Contains("/api/auth/login") || path.Contains("/api/auth/register"))
+            // Excluir rutas utilitarias y preflight
+            if (_excludedStartsWith.Any(path.StartsWith) ||
+                _excludedContains.Any(path.Contains) ||
+                context.Request.Method.Equals("OPTIONS", StringComparison.OrdinalIgnoreCase))
             {
                 await _next(context);
                 return;
             }
 
-            if (!string.IsNullOrEmpty(authorizationHeader) && authorizationHeader.StartsWith("Bearer "))
+            // Si no está autenticado, dejamos que [Authorize] decida (o el endpoint es público)
+            if (context.User?.Identity?.IsAuthenticated != true)
             {
-                var token = authorizationHeader.Substring(7);
-                var jwtHandler = new JwtSecurityTokenHandler();
+                await _next(context);
+                return;
+            }
 
-                try
-                {
-                    var jwtToken = jwtHandler.ReadToken(token) as JwtSecurityToken;
-                    if (jwtToken != null)
-                    {
-                        var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "userId")?.Value;
-                        var tokenSecurityStamp = jwtToken.Claims.FirstOrDefault(c => c.Type == "securityStamp")?.Value;
+            // Claims ya validadas por JwtBearer
+            var userIdClaim = context.User.Claims.FirstOrDefault(c => c.Type == "userId")?.Value;
+            var tokenSecurityStamp = context.User.Claims.FirstOrDefault(c => c.Type == "securityStamp")?.Value;
 
-                        if (int.TryParse(userIdClaim, out int userId) && !string.IsNullOrEmpty(tokenSecurityStamp))
-                        {
-                            var user = await dbContext.Usuarios.FindAsync(userId);
-                            if (user == null || user.SecurityStamp != tokenSecurityStamp || !user.Estado)
-                            {
-                                Console.WriteLine($"Token rechazado para el usuario {userId}. SecurityStamp cambiado o usuario desactivado.");
-                                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                                await context.Response.WriteAsync("Token inválido o usuario no autorizado.");
-                                return;
-                            }
-                        }
-                    }
-                }
-                catch (SecurityTokenException ex)
-                {
-                    Console.WriteLine($"Token inválido: {ex.Message}");
-                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                    await context.Response.WriteAsync("Token no válido.");
-                    return;
-                }
+            if (!int.TryParse(userIdClaim, out var userId) || string.IsNullOrWhiteSpace(tokenSecurityStamp))
+            {
+                await WriteUnauthorized(context, "Token inválido o faltan claims requeridos.");
+                return;
+            }
+
+            // Cargar solo lo necesario y NO trackear (perf)
+            var db = context.RequestServices.GetRequiredService<ApplicationDbContext>();
+            var user = await db.Usuarios
+                .AsNoTracking()
+                .Select(u => new { u.UsuarioId, u.SecurityStamp, u.Estado })
+                .FirstOrDefaultAsync(u => u.UsuarioId == userId);
+
+            if (user is null || user.SecurityStamp != tokenSecurityStamp || !user.Estado)
+            {
+                await WriteUnauthorized(context, "Token inválido o usuario no autorizado.");
+                return;
             }
 
             await _next(context);
+        }
+
+        private static async Task WriteUnauthorized(HttpContext context, string message)
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsJsonAsync(new { error = message, timestamp = DateTime.UtcNow });
         }
     }
 }

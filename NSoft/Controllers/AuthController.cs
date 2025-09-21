@@ -19,7 +19,7 @@ namespace NSoft.Controllers
         {
             _authService = authService;
         }
-
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
@@ -47,6 +47,7 @@ namespace NSoft.Controllers
             var response = await _authService.ChangePasswordAsync(dto);
             return StatusCode(response.StatusCode, response);
         }
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto, int idUsuario)
         {
