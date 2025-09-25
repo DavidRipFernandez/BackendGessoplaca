@@ -119,6 +119,21 @@ namespace NSoft.Repositories
             }
         }
 
+        public async Task<Marca?> BuscarPorNombreAsync(string nombre)
+        {
+            try
+            {
+                return await _context.Marcas
+                    .AsNoTracking() //desactiva el tacking de EF Ymejora el rendimiento para que no rastree cambios en la entidad, util para consultas de solo lectura
+                    .FirstOrDefaultAsync(m => m.Nombre.ToLower() == nombre.ToLower()); //Retorna el primer elemento que cumpla la condicion, retorna null si no cumple
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al buscar marca por nombre {nombre}");
+                throw new Exception("Error al buscar marca por nombre.", ex);
+            }
+        }
+
         //public async Task<Marca?> ObtenerPorIdConProveedoresAsync ( int id )
         //{
         //    try

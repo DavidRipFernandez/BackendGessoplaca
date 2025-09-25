@@ -10,6 +10,7 @@ namespace NSoft.Repositories.IRepositories
         Task<bool> ActualizarAsync ( Marca marca );
         Task<bool> CambiarEstadoAsync ( int id, bool estado );
         //Task<Marca?> ObtenerPorIdConProveedoresAsync ( int id );
+        Task<Marca?> BuscarPorNombreAsync(string nombre);
 
     }
 }
