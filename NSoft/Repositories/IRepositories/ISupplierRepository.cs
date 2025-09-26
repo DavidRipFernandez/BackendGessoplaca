@@ -7,7 +7,6 @@ namespace NSoft.Repositories.IRepositories
         Task<IEnumerable<Proveedor>> ObtenerProveedoresAsync ( bool? estado );
         Task<Proveedor?> ObtenerProveedorConRelacionesAsync ( string id);
         Task<Proveedor?> ObtenerPorIdAsync (string id);
-        Task<Proveedor?> ObtenerPorNombreAsync ( string nombre );
         Task<bool> AgregarAsync(Proveedor proveedor);
         Task<bool> ActualizarAsync(Proveedor proveedor);
         Task<bool> CambiarEstadoAsync ( string id, bool estado );

@@ -1,6 +1,5 @@
 ﻿using NSoft.DTOs;
 using NSoft.Models;
-using NSoft.Repositories;
 using NSoft.Repositories.IRepositories;
 using NSoft.Services.IServices;
 
@@ -9,25 +8,10 @@ namespace NSoft.Services
     public class PrecioTarifaService : IPrecioTarifaService
     {
         private readonly IPrecioTarifaRepository _precioTarifaRepository;
-        //Dependecias para resolver por nombre y validar relacion proveedor-marca
-        private readonly IMaterialRepository _materialRepository;
-        private readonly IMarcaRepository _marcaRepository;
-        private readonly ISupplierRepository _supplierRepository;
-        private readonly IProveedorMarcaRepository _proveedorMarcaRepository;
 
-        public PrecioTarifaService(
-            IPrecioTarifaRepository precioTarifaRepository,
-            IMaterialRepository materialRepository,
-            IMarcaRepository marcaRepository,
-            ISupplierRepository supplierRepository,
-            IProveedorMarcaRepository proveedorMarcaRepository
-        )
+        public PrecioTarifaService ( IPrecioTarifaRepository precioTarifaRepository )
         {
             _precioTarifaRepository = precioTarifaRepository;
-            _materialRepository = materialRepository;          
-            _marcaRepository = marcaRepository;                
-            _supplierRepository = supplierRepository;        
-            _proveedorMarcaRepository = proveedorMarcaRepository; 
         }
 
         public async Task<ApiResponse<bool>> GuardarPrecioAsync ( PrecioTarifaDto dto )
@@ -172,156 +156,6 @@ namespace NSoft.Services
             catch (Exception ex)
             {
                 return ApiResponse<PrecioTarifaDto>.ErrorResponse("Error al obtener el precio mínimo.", ex.Message, 500);
-            }
-        }
-
-        public async Task<ApiResponse<object>> CargarPreciosPorNombresAsync(
-            string proveedorCifId,
-            string? empresa,
-            List<CargaPrecioItemRequestDto> filas)
-        {
-            try
-            {
-                // Validaciones básicas
-                if (string.IsNullOrWhiteSpace(proveedorCifId))
-                    return ApiResponse<object>.ErrorResponse("Proveedor no válido.", "El proveedorCifId es requerido.", 400);
-
-                if (filas is null || filas.Count == 0)
-                    return ApiResponse<object>.ErrorResponse("Lista vacía.", "No se enviaron filas para procesar.", 400);
-
-                // (a) validar que el proveedor exista
-                var proveedor = await _supplierRepository.ObtenerPorIdAsync(proveedorCifId);
-                if (proveedor is null)
-                    return ApiResponse<object>.ErrorResponse(
-                        "Proveedor inexistente.",
-                        $"No se encontró proveedor con CIF '{proveedorCifId}'.",
-                        404);
-
-                var errores = new List<CargaPrecioItemErrorDto>();
-
-                foreach (var fila in filas)
-                {
-                    var nombreMat = fila.NombreMaterial?.Trim();
-                    var nombreMarca = fila.NombreMarca?.Trim();
-
-                    // Campos requeridos
-                    if (string.IsNullOrWhiteSpace(nombreMat) || string.IsNullOrWhiteSpace(nombreMarca))
-                    {
-                        errores.Add(new CargaPrecioItemErrorDto
-                        {
-                            NombreMaterial = nombreMat ?? "",
-                            NombreMarca = nombreMarca ?? "",
-                            Fila = fila.FilaExcel,
-                            DetalleError = "Nombre de material y nombre de marca son obligatorios."
-                        });
-                        continue;
-                    }
-
-                    if (fila.Precio <= 0)
-                    {
-                        errores.Add(new CargaPrecioItemErrorDto
-                        {
-                            NombreMaterial = nombreMat,
-                            NombreMarca = nombreMarca,
-                            Fila = fila.FilaExcel,
-                            DetalleError = "El precio debe ser mayor a 0."
-                        });
-                        continue;
-                    }
-
-                    // (a) buscar material y marca por nombre
-                    var material = await _materialRepository.BuscarPorNombreAsync(nombreMat);
-                    var marca = await _marcaRepository.BuscarPorNombreAsync(nombreMarca);
-
-                    if (material is null || marca is null)
-                    {
-                        errores.Add(new CargaPrecioItemErrorDto
-                        {
-                            MaterialId = material?.MaterialId,
-                            NombreMaterial = nombreMat,
-                            MarcaId = marca?.MarcaId,
-                            NombreMarca = nombreMarca,
-                            Fila = fila.FilaExcel,
-                            DetalleError = "Verifique que el material y la marca existan correctamente."
-                        });
-                        continue;
-                    }
-
-                    // (d) validar relación Proveedor–Marca
-                    var relacion = await _proveedorMarcaRepository.ObtenerPorIdAsync(proveedorCifId, marca.MarcaId);
-                    if (relacion is null || !relacion.Estado)
-                    {
-                        errores.Add(new CargaPrecioItemErrorDto
-                        {
-                            MaterialId = material.MaterialId,
-                            NombreMaterial = nombreMat,
-                            MarcaId = marca.MarcaId,
-                            NombreMarca = nombreMarca,
-                            Fila = fila.FilaExcel,
-                            DetalleError = "La marca no está asociada al proveedor o está desactivada."
-                        });
-                        continue;
-                    }
-
-                    // (b) upsert de PreciosTarifa (tu repo ya realiza upsert)
-                    var entidad = new PrecioTarifa
-                    {
-                        MaterialId = material.MaterialId,
-                        MarcaId = marca.MarcaId,
-                        ProveedorCifId = proveedorCifId,
-                        Precio = fila.Precio
-                    };
-
-                    var ok = await _precioTarifaRepository.GuardarPrecioAsync(entidad);
-                    if (!ok)
-                    {
-                        errores.Add(new CargaPrecioItemErrorDto
-                        {
-                            MaterialId = material.MaterialId,
-                            NombreMaterial = nombreMat,
-                            MarcaId = marca.MarcaId,
-                            NombreMarca = nombreMarca,
-                            Fila = fila.FilaExcel,
-                            DetalleError = "No se pudo guardar/actualizar el precio."
-                        });
-                    }
-                }
-
-                // Respuesta final
-                if (errores.Count == 0)
-                {
-                    return new ApiResponse<object>(
-                        message: "Todos los materiales han sido registrados correctamente",
-                        technicalMessage: "",
-                        data: Array.Empty<object>(),
-                        statusCode: 200,
-                        success: true
-                    );
-                }
-                else
-                {
-                    var payload = new List<CargaPreciosResultadoErrorDto>
-                    {
-                        new CargaPreciosResultadoErrorDto
-                        {
-                            ProveedorCifId = proveedorCifId,
-                            Empresa = empresa,
-                            Materiales = errores
-                        }
-                    };
-
-                    return new ApiResponse<object>(
-                        message: $"Se han encontrado algunos problemas al registrar los materiales del proveedor : {proveedorCifId}",
-                        technicalMessage: "",
-                        data: payload,
-                        statusCode: 200,   // si prefieres marcarlo como fallo, puedes usar success=false o 207
-                        success: true
-                    );
-                }
-            }
-            catch (Exception ex)
-            {
-                return ApiResponse<object>.ErrorResponse("Error interno al procesar la carga masiva.", ex.Message, 500);
             }
         }
     }

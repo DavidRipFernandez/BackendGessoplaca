@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSoft.DTOs;
 using NSoft.Services.IServices;
@@ -16,8 +15,6 @@ namespace NSoft.Controllers
         {
             _roleService = roleService;
         }
-
-        [Authorize]
         [HttpGet("GetAllRoles")]
         public async Task<IActionResult> GetAllRoles()
         {
@@ -25,8 +22,7 @@ namespace NSoft.Controllers
             return StatusCode(response.StatusCode, response);
 
         }
-        [HttpPost]
-        [Route("create")]
+
         public async Task<IActionResult> CreateRole([FromBody] RoleCreatedDTO dto)
         {
             if (dto == null)
