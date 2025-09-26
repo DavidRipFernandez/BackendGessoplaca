@@ -119,7 +119,6 @@ namespace NSoft.Repositories
             }
         }
 
-<<<<<<< HEAD
         public async Task<Marca?> ObtenerPorNombreAsync ( string nombre )
         {
             return await _context.Marcas
@@ -127,38 +126,5 @@ namespace NSoft.Repositories
                 .FirstOrDefaultAsync(m => m.Nombre.ToLower() == nombre.ToLower());
 
         }
-=======
-        public async Task<Marca?> BuscarPorNombreAsync(string nombre)
-        {
-            try
-            {
-                return await _context.Marcas
-                    .AsNoTracking() //desactiva el tacking de EF Ymejora el rendimiento para que no rastree cambios en la entidad, util para consultas de solo lectura
-                    .FirstOrDefaultAsync(m => m.Nombre.ToLower() == nombre.ToLower()); //Retorna el primer elemento que cumpla la condicion, retorna null si no cumple
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error al buscar marca por nombre {nombre}");
-                throw new Exception("Error al buscar marca por nombre.", ex);
-            }
-        }
-
-        //public async Task<Marca?> ObtenerPorIdConProveedoresAsync ( int id )
-        //{
-        //    try
-        //    {
-        //        return await _context.Marcas
-        //            .Include(m => m.ProveedoresMarcas)
-        //            .ThenInclude(pm => pm.Proveedor)
-        //            .AsNoTracking()
-        //            .FirstOrDefaultAsync(m => m.MarcaId == id);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, "Error inesperado al obtener la marca con proveedores.");
-        //        throw new Exception("Error inesperado al obtener las marcas con proveedores.", ex);
-        //    }
-        //}
->>>>>>> origin/feature/PrecioMaterialesProveedor
     }
 }
