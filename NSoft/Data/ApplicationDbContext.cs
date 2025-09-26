@@ -1,7 +1,6 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
 using NSoft.Models;
-using NSoft.Models.Presupuesto;
 
 namespace NSoft.Data
 {
@@ -22,18 +21,8 @@ namespace NSoft.Data
         public DbSet<ProveedorMarca> ProveedoresMarcas { get; set; }
         public DbSet<PrecioTarifa> PreciosTarifas { get; set; }
 
-        //PRESUPUESTO
-        public DbSet<Presupuesto> Presupuestos { get; set; }
-        public DbSet<Descompuesto> Descompuestos { get; set; }
-        public DbSet<DetalleDescompuesto> DetalleDescompuestos { get; set; }
-        public DbSet<ManoDeObra> ManoDeObras { get; set; }
-        public DbSet<TipoManoObra> TipoManoObras { get; set; }
-
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
-            base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Rol>()
                 .Property(r => r.Estado)
@@ -102,65 +91,9 @@ namespace NSoft.Data
                 entity.Property(rm => rm.Estado)
                 .HasDefaultValue(true);
             });
-
-            //PRESUPUESTO
-            modelBuilder.Entity<Descompuesto>()
-                .HasIndex(d => new { d.IsPlantilla, d.Titulo })
-                .HasDatabaseName("IX_Descompuestos_Plantilla_Nombre");
-
-            // Especificar la precisión para las propiedades decimales.
-            modelBuilder.Entity<Descompuesto>()
-                .Property(d => d.Precio).HasColumnType("decimal(18, 2)");
-            modelBuilder.Entity<Descompuesto>()
-                .Property(d => d.ManoObra).HasColumnType("decimal(18, 2)");
-            modelBuilder.Entity<Descompuesto>()
-                .Property(d => d.Beneficio).HasColumnType("decimal(18, 2)");
-            modelBuilder.Entity<Descompuesto>()
-                .Property(d => d.GastoAdministrativo).HasColumnType("decimal(18, 2)");
-
-            // Presupuesto (1) -> Descompuesto (N)
-            modelBuilder.Entity<Presupuesto>()
-                .HasMany(p => p.Descompuestos)
-                .WithOne(d => d.Presupuesto)
-                .HasForeignKey(d => d.PresupuestoId)
-                // Evitamos el borrado en cascada para no tener problemas con las plantillas (cuyo PresupuestoId es nulo).
-                .OnDelete(DeleteBehavior.ClientSetNull);
-
-            // Descompuesto (1) -> DetallaDescompuesto (N)
-            modelBuilder.Entity<Descompuesto>()
-                .HasMany(d => d.DetalleDescompuestos)
-                .WithOne(dd => dd.Descompuesto)
-                .HasForeignKey(dd => dd.DescompuestoId)
-                // Si se borra un Descompuesto, sus detalles se borran con él.
-                .OnDelete(DeleteBehavior.Cascade);
-
-            // Descompuesto (1) -> ManoDeObra (N)
-            modelBuilder.Entity<Descompuesto>()
-                .HasMany(d => d.ManoDeObras)
-                .WithOne(m => m.Descompuesto)
-                .HasForeignKey(m => m.DescompuestoId)
-                // Si se borra un Descompuesto, su mano de obra asociada también.
-                .OnDelete(DeleteBehavior.Cascade);
-
-            // TipoManoObra (1) -> ManoDeObra (N)
-            modelBuilder.Entity<TipoManoObra>()
-                .HasMany(t => t.ManoDeObras)
-                .WithOne(m => m.TipoManoObra)
-                .HasForeignKey(m => m.TipoManoObraId)
-                // Evita que se borre un tipo si está en uso.
-                .OnDelete(DeleteBehavior.Restrict);
-
-
-            // --- Configuración de otras entidades (tipos decimales) ---
-
-            modelBuilder.Entity<DetalleDescompuesto>()
-                .Property(d => d.Precio).HasColumnType("decimal(18, 2)");
-            modelBuilder.Entity<DetalleDescompuesto>()
-                .Property(d => d.Descuento).HasColumnType("decimal(18, 2)");
-
-            modelBuilder.Entity<ManoDeObra>()
-                .Property(m => m.Precio).HasColumnType("decimal(18, 2)");
-
+            
+            
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

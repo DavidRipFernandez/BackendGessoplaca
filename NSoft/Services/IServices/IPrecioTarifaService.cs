@@ -9,11 +9,5 @@ namespace NSoft.Services.IServices
         Task<ApiResponse<MarcaConPreciosDto>> ObtenerPrecioPorMarcaAsync ( int marcaId );
         Task<ApiResponse<PrecioTarifaDto>> ObtenerPrecioMasBajoDeMaterialAsync ( int materialId );
         Task<ApiResponse<bool>> GuardarMasivoAsync ( List<PrecioTarifaDto> precios );
-        Task<ApiResponse<object>> CargarPreciosPorNombresAsync(
-         string proveedorCifId,
-         string? empresa,
-         List<CargaPrecioItemRequestDto> filas);
-
-
     }
 }

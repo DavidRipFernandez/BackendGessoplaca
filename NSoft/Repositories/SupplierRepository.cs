@@ -56,13 +56,6 @@ namespace NSoft.Repositories
             }
         }
 
-        public async Task<Proveedor?> ObtenerPorNombreAsync ( string nombre )
-        {
-            return await _context.Proveedores
-                .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.Nombre.ToLower() == nombre.ToLower());
-        }
-
         public async Task<Proveedor?> ObtenerProveedorConRelacionesAsync ( string id )
         {
             try

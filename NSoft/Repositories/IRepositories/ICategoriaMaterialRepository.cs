@@ -7,8 +7,8 @@ namespace NSoft.Repositories.IRepositories
         Task<IEnumerable<CategoriaMaterial>> ObtenerPorEstadoAsync ( bool estado );
         Task<CategoriaMaterial?> ObtenerPorIdAsync ( int id );
         Task<CategoriaMaterial?> ObtenerPorIdConMaterialesAsync ( int id );
-        Task AgregarAsync ( CategoriaMaterial categoria );
-        Task ActualizarAsync ( CategoriaMaterial categoria );
-        Task CambiarEstadoAsync ( int id, bool estado );
+        Task<bool> AgregarAsync ( CategoriaMaterial categoria );
+        Task<bool> ActualizarAsync ( CategoriaMaterial categoria );
+        Task<bool> CambiarEstadoAsync ( int id, bool estado );
     }
 }

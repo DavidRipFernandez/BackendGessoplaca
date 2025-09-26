@@ -119,12 +119,21 @@ namespace NSoft.Repositories
             }
         }
 
-        public async Task<Marca?> ObtenerPorNombreAsync ( string nombre )
-        {
-            return await _context.Marcas
-                .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.Nombre.ToLower() == nombre.ToLower());
-
-        }
+        //public async Task<Marca?> ObtenerPorIdConProveedoresAsync ( int id )
+        //{
+        //    try
+        //    {
+        //        return await _context.Marcas
+        //            .Include(m => m.ProveedoresMarcas)
+        //            .ThenInclude(pm => pm.Proveedor)
+        //            .AsNoTracking()
+        //            .FirstOrDefaultAsync(m => m.MarcaId == id);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Error inesperado al obtener la marca con proveedores.");
+        //        throw new Exception("Error inesperado al obtener las marcas con proveedores.", ex);
+        //    }
+        //}
     }
 }

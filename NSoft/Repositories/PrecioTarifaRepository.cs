@@ -157,21 +157,6 @@ namespace NSoft.Repositories
             }
         }
 
-        public async Task<PrecioTarifa?> ObtenerPrecioAsync ( int materialId, int marcaId, string proveedorCif )
-        {
-            try
-            {
-                return await _context.PreciosTarifas
-                    .Where(p => p.MaterialId == materialId && p.Estado && p.MarcaId == marcaId && p.ProveedorCifId == proveedorCif)
-                    .FirstOrDefaultAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al obtener el precio más bajo para el material con ID {MaterialId}.", materialId);
-                throw new Exception("Error al obtener el precio más bajo.", ex);
-            }
-        }
-
         public async Task<bool> ExisteAsync ( int materialId, string proveedorCifId, int marcaId )
         {
             try

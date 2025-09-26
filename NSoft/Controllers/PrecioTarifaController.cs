@@ -50,32 +50,5 @@ namespace NSoft.Controllers
             var response = await _precioTarifaService.ObtenerPrecioMasBajoDeMaterialAsync(materialId);
             return StatusCode(response.StatusCode, response);
         }
-
-        [HttpPost("proveedor/{proveedorCifId}/carga-masiva-nombres")]
-        public async Task<IActionResult> CargarPreciosPorNombres(string proveedorCifId,[FromBody] CargaPreciosRequestDto request)
-        {
-            // Validación rápida de entrada
-            if (request is null || request.MaterialesProveedor is null || request.MaterialesProveedor.Count == 0)
-            {
-                var error = ApiResponse<object>.ErrorResponse(
-                    "Lista vacía.",
-                    "No se enviaron filas para procesar.",
-                    400
-                );
-                return StatusCode(error.StatusCode, error);
-            }
-
-            var response = await _precioTarifaService.CargarPreciosPorNombresAsync(
-                proveedorCifId,
-                request.Empresa,
-                request.MaterialesProveedor
-            );
-
-            return StatusCode(response.StatusCode, response);
-        }
-
-
-
-
     }
 }
