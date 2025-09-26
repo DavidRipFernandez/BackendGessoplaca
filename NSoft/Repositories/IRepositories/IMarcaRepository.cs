@@ -9,7 +9,12 @@ namespace NSoft.Repositories.IRepositories
         Task<bool> AgregarAsync ( Marca marca );
         Task<bool> ActualizarAsync ( Marca marca );
         Task<bool> CambiarEstadoAsync ( int id, bool estado );
+<<<<<<< HEAD
         Task<Marca?> ObtenerPorNombreAsync ( string nombre );
+=======
+        //Task<Marca?> ObtenerPorIdConProveedoresAsync ( int id );
+        Task<Marca?> BuscarPorNombreAsync(string nombre);
+>>>>>>> origin/feature/PrecioMaterialesProveedor
 
     }
 }

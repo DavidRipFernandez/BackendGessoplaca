@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSoft.DTOs;
 using NSoft.Services.IServices;
@@ -15,6 +16,8 @@ namespace NSoft.Controllers
         {
             _roleService = roleService;
         }
+
+        [Authorize]
         [HttpGet("GetAllRoles")]
         public async Task<IActionResult> GetAllRoles()
         {

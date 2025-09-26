@@ -34,7 +34,8 @@
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
       "environmentVariables": {
         "ASPNETCORE_URLS": "https://+:443;http://+:80",
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "JwtSettings__Key": "p6M5N9wQ3eU7yA1rT4vB8kZ2sX6cJ0hD5fL2qW8mR3tY9pC1"
       },
       "publishAllPorts": false,
       "useSSL": true,
