@@ -10,6 +10,7 @@ namespace NSoft.Repositories.IRepositories
         Task<IEnumerable<PrecioTarifaResumenDto>> ObtenerPreciosPorProveedorAsync ( string proveedorCifId );
         Task<IEnumerable<PrecioTarifaResumenDto>> ObtenerPreciosPorMarcaAsync ( int marcaId ); 
         Task<PrecioTarifa?> ObtenerPrecioMasBajoAsync ( int materialId );
+        Task<PrecioTarifa?> ObtenerPrecioAsync ( int materialId, int marcaId, string proveedorCif );
 
         Task<bool> ExisteAsync ( int materialId, string proveedorCifId, int marcaId );
 
