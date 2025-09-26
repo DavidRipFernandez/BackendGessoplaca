@@ -15,7 +15,6 @@ namespace NSoft.Services.PresupuestoServices
             _repo = repo;
         }
 
-        // Helper centralizado para mapear excepciones a ApiResponse (incluye ex.Message en DEV)
         private static ApiResponse<T> FromException<T> ( string userMessage, Exception ex )
         {
             return ex switch
@@ -69,8 +68,6 @@ namespace NSoft.Services.PresupuestoServices
                     throw new ArgumentException("El ID debe ser mayor a cero.");
 
                 var entidad = await _repo.ObtenerConDetallesAsync(descompuestoId);
-                if (entidad is null)
-                    return ApiResponse<DescompuestoDto>.ErrorResponse("No encontrado.", $"No existe descompuesto con ID {descompuestoId}.", 404);
 
                 var dto = MapToDto(entidad, incluirDetalles: true);
                 return ApiResponse<DescompuestoDto>.SuccessResponse(dto, "Descompuesto obtenido correctamente.");
@@ -100,10 +97,10 @@ namespace NSoft.Services.PresupuestoServices
                     Descripcion = descompuestoDto.Descripcion,
                     UnidadMedida = descompuestoDto.UnidadMedida,
                     Beneficio = descompuestoDto.Beneficio,
-                    ManoObra = 0m,                 // ADDED: no viene en Creación → por defecto
-                    GastoAdministrativo = 0m,      // ADDED: no viene en Creación → por defecto
-                    Precio = 0m,                   // ADDED: si tu entidad lo tiene, iniciamos en 0
-                    Estado = true,                 // ADDED: alta por defecto
+                    ManoObra = 0m,
+                    GastoAdministrativo = 0m,
+                    Precio = 0m,
+                    Estado = true,
                     IsPlantilla = descompuestoDto.IsPlantilla,
                     PresupuestoId = descompuestoDto.PresupuestoId
                 };
@@ -216,12 +213,12 @@ namespace NSoft.Services.PresupuestoServices
                 Descripcion = e.Descripcion,
                 IsPlantilla = e.IsPlantilla,
                 UnidadMedida = e.UnidadMedida,
-                Precio = e.Precio,                           // ADDED
+                Precio = e.Precio,
                 ManoObra = e.ManoObra,
                 Beneficio = e.Beneficio,
                 GastoAdministrativo = e.GastoAdministrativo,
-                Estado = e.Estado,                           // ADDED
-                PresupuestoId = e.PresupuestoId              // ADDED
+                Estado = e.Estado,
+                PresupuestoId = e.PresupuestoId
             };
 
             if (incluirDetalles)
@@ -231,6 +228,7 @@ namespace NSoft.Services.PresupuestoServices
                     DetalleDescompuestoId = d.DetalleDescompuestoId,
                     NombreMaterial = d.NombreMaterial,
                     Proveedor = d.Proveedor,
+                    Marca = d.Marca,
                     Unidades = d.Unidades,
                     Precio = d.Precio,
                     Descuento = d.Descuento,

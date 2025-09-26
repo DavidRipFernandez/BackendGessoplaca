@@ -63,9 +63,11 @@ namespace NSoft.Repositories.PresupuestoRepository
             if (string.IsNullOrWhiteSpace(nombre))
                 throw new ArgumentException("El parámetro 'nombre' es obligatorio.");
 
+            var searchTerm = $"%{nombre}";
+
             return await _context.Descompuestos
                 .AsNoTracking()
-                .Where(d => d.Titulo.ToLower().Contains(nombre.ToLower()))
+                .Where(descompuesto => EF.Functions.Like(descompuesto.Titulo, searchTerm))
                 .ToListAsync();
         }
 
@@ -79,13 +81,18 @@ namespace NSoft.Repositories.PresupuestoRepository
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Descompuesto?> ObtenerConDetallesAsync ( int idDescompuesto )
+        public async Task<Descompuesto> ObtenerConDetallesAsync ( int idDescompuesto )
         {
-            return await _context.Descompuestos
+            var descompuesto = await _context.Descompuestos
                 .Include(d => d.DetalleDescompuestos)
                 .Include(d => d.ManoDeObras)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(d => d.DescompuestoId == idDescompuesto);
+
+            if (descompuesto == null)
+                throw new KeyNotFoundException($"No se encontró el descompuesto con ID {idDescompuesto} para eliminar.");
+
+            return descompuesto;
         }
     }
 }

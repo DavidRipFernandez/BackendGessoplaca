@@ -9,7 +9,7 @@ namespace NSoft.Repositories.PresupuestoRepository.IRepositories
         Task ActualizarParcialAsync ( int descompuestoId, string titulo, string descripcion, string unidadMedida, decimal beneficio, decimal manoDeObra, decimal gastoAdministrativo );
         Task ActualizarCompletoAsync ( Descompuesto descompuesto );
         Task EliminarAsync ( int idDescompuesto );
-        Task<Descompuesto?> ObtenerConDetallesAsync ( int idDescompuesto );
+        Task<Descompuesto> ObtenerConDetallesAsync ( int idDescompuesto );
         Task<IEnumerable<Descompuesto>> BuscarPorNombreAsync ( string nombre );
 
     }
