@@ -8,7 +8,7 @@
     public class CargaPrecioItemRequestDto
     {
         public string NombreMaterial { get; set; } = default!;
-        public string? SistemaMedicion {  get; set; }
+        public string? SistemaMedicion {  get; set; } 
         public decimal Precio { get; set; }
         public string NombreMarca { get; set; }
         public int FilaExcel { get; set; }
